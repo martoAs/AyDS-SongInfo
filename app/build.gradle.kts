@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.picasso)
     implementation(libs.androidx.room)
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.3")
 
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
