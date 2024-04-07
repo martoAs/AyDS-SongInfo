@@ -8,7 +8,7 @@ interface SongDateFormatter{
 }
 class SongDateFormatterCreator(val song:Song.SpotifySong) {
 
-    val precision = song.releaseDatePrecision
+    private val precision = song.releaseDatePrecision
 
     fun getDate() =  when (precision) {
                      "year" -> Year(song).getDate()
@@ -18,12 +18,12 @@ class SongDateFormatterCreator(val song:Song.SpotifySong) {
 }
 
 internal class Day(song:Song.SpotifySong) : SongDateFormatter{
-    val listaFecha = song.releaseDate.split("-")
+    private val listaFecha = song.releaseDate.split("-")
     override fun getDate() = listaFecha[2] + "/" + listaFecha[1] + "/" + listaFecha[0]
 }
 
 internal class Month(song:Song.SpotifySong) : SongDateFormatter{
-    val listaFecha = song.releaseDate.split("-")
+    private val listaFecha = song.releaseDate.split("-")
 
     override fun getDate():String{
         var mes = Month(listaFecha[1].toInt()).name
@@ -35,13 +35,14 @@ internal class Month(song:Song.SpotifySong) : SongDateFormatter{
 }
 
 internal class Year(song:Song.SpotifySong) : SongDateFormatter{
-    val listaFecha = song.releaseDate.split("-")
+    private val listaFecha = song.releaseDate.split("-")
     override fun getDate(): String {
         val year = listaFecha[0].toInt()
-        if(year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
-            return "$year (leap year)"
+        val isLeapYear = (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
+        return if(isLeapYear)
+            "$year (leap year)"
         else
-            return "$year (not a leap year)"
+            "$year (not a leap year)"
     }
 
 }
