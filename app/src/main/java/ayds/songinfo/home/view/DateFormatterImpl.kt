@@ -3,26 +3,31 @@ package ayds.songinfo.home.view
 import ayds.songinfo.home.model.entities.Song
 import kotlinx.datetime.Month
 
+interface SongDateFormatterFactory{
+    fun getSongDateFormatter(song: Song.SpotifySong): SongDateFormatter
+}
+
+class SongDateFormatterFactoryImpl: SongDateFormatterFactory{
+    override fun getSongDateFormatter(song: Song.SpotifySong) =
+        when (song.releaseDatePrecision) {
+            "year" -> Year(song)
+            "month" -> Month(song)
+            "day" -> Day(song)
+            else -> DefaultFormat(song)
+        }
+}
+
 interface SongDateFormatter{
+    val song:Song.SpotifySong
     fun getDate() : String
 }
-class SongDateFormatterCreator(val song:Song.SpotifySong) {
 
-    private val precision = song.releaseDatePrecision
-
-    fun getDate() =  when (precision) {
-                     "year" -> Year(song).getDate()
-                     "month" -> Month(song).getDate()
-                     "day" -> Day(song).getDate()
-                      else -> DefaultFormat(song).getDate() }
-}
-
-internal class Day(song:Song.SpotifySong) : SongDateFormatter{
+internal class Day(override val song:Song.SpotifySong): SongDateFormatter{
     private val listaFecha = song.releaseDate.split("-")
     override fun getDate() = listaFecha[2] + "/" + listaFecha[1] + "/" + listaFecha[0]
 }
 
-internal class Month(song:Song.SpotifySong) : SongDateFormatter{
+internal class Month(override val song:Song.SpotifySong) : SongDateFormatter{
     private val listaFecha = song.releaseDate.split("-")
 
     override fun getDate():String{
@@ -34,7 +39,7 @@ internal class Month(song:Song.SpotifySong) : SongDateFormatter{
     }
 }
 
-internal class Year(song:Song.SpotifySong) : SongDateFormatter{
+internal class Year(override val song:Song.SpotifySong) : SongDateFormatter{
     private val listaFecha = song.releaseDate.split("-")
     override fun getDate(): String {
         val year = listaFecha[0].toInt()
@@ -47,6 +52,6 @@ internal class Year(song:Song.SpotifySong) : SongDateFormatter{
 
 }
 
-internal class DefaultFormat(var song:Song.SpotifySong) : SongDateFormatter{
+internal class DefaultFormat(override val  song:Song.SpotifySong) : SongDateFormatter{
     override fun getDate() = song.releaseDate
 }
