@@ -42,14 +42,12 @@ class OtherInfoWindow : Activity() {
         Thread {
             val article = getArticle(artistName)
             var artistInformation = ""
-            if (article != null) { // exists in db
-                artistInformation = "[*]" + article.biography
-                val urlString = article.articleUrl
-                triggerWebBrowsingActivity(urlString)
-
-            } else { // get from service
+            article?.let {
+                artistInformation = "[*]" + it.biography
+                triggerWebBrowsingActivity(it.articleUrl)
+            } ?: run {
                 artistInformation = getArtistInfoFromService(lastFMAPI, artistName, artistInformation)
-              }
+            }
             val imageUrl =
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
             Log.e("TAG", "Get Image from $imageUrl")
