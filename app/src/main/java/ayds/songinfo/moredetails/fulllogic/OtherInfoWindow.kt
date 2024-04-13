@@ -22,50 +22,58 @@ import java.io.IOException
 import java.util.Locale
 
 class OtherInfoWindow : Activity() {
-    private var textPane1: TextView? = null
+    private var artistInfoDisplayer: TextView? = null
 
     //private JPanel imagePanel;
     // private JLabel posterImageLabel;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_info)
-        textPane1 = findViewById(R.id.textPane1)
+        artistInfoDisplayer = findViewById(R.id.textPane1)
         open(intent.getStringExtra("artistName"))
     }
 
     private fun getARtistInfo(artistName: String?) {
 
         // create
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://ws.audioscrobbler.com/2.0/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-        val lastFMAPI = retrofit.create(LastFMAPI::class.java)
+        val retrofit = getRetrofit()
+        val lastFMAPI = getLastFMAPI(retrofit)
         Log.e("TAG", "artistName $artistName")
         Thread {
-            val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+            val article = getArticle(artistName)
             var artistInformation = ""
             if (article != null) { // exists in db
                 artistInformation = "[*]" + article.biography
                 val urlString = article.articleUrl
-                findViewById<View>(R.id.openUrlButton1).setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.setData(Uri.parse(urlString))
-                    startActivity(intent)
-                }
+                triggerWebBrowsingActivity(urlString)
+
             } else { // get from service
                 artistInformation = getArtistInfoFromService(lastFMAPI, artistName, artistInformation)
-            }
+              }
             val imageUrl =
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
             Log.e("TAG", "Get Image from $imageUrl")
-            val finalText = artistInformation
-            runOnUiThread {
-                Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
-                textPane1!!.text = Html.fromHtml(finalText)
-            }
+            updateUserInterface(artistInformation, imageUrl)
         }.start()
     }
+
+    private fun getArticle(artistName: String?) =
+        dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
+
+    private fun updateUserInterface(artistInformation: String, imageUrl: String) {
+        runOnUiThread {
+            Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
+            artistInfoDisplayer!!.text = Html.fromHtml(artistInformation)
+        }
+    }
+
+    private fun getLastFMAPI(retrofit: Retrofit): LastFMAPI =
+        retrofit.create(LastFMAPI::class.java)
+
+    private fun getRetrofit(): Retrofit = Retrofit.Builder()
+        .baseUrl("https://ws.audioscrobbler.com/2.0/")
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .build()
 
     private fun getArtistInfoFromService(
         lastFMAPI: LastFMAPI,
@@ -88,7 +96,7 @@ class OtherInfoWindow : Activity() {
                 }
             } ?: "No Results"
 
-            url?.let { triggerWebBrowsingActivity(url) }
+            url?.let { triggerWebBrowsingActivity(url.asString) }
 
         } catch (e1: IOException) {
             Log.e("TAG", "Error $e1")
@@ -111,11 +119,10 @@ class OtherInfoWindow : Activity() {
         return gson.fromJson(callResponse.body(), JsonObject::class.java)
     }
 
-    private fun triggerWebBrowsingActivity(url: JsonElement) {
-        val urlString = url.asString
+    private fun triggerWebBrowsingActivity(url: String) {
         findViewById<View>(R.id.openUrlButton1).setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
-            intent.setData(Uri.parse(urlString))
+            intent.setData(Uri.parse(url))
             startActivity(intent)
         }
     }
