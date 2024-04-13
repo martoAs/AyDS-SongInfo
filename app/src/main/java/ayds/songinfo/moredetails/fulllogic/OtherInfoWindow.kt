@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.room.Room.databaseBuilder
 import ayds.songinfo.R
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
 import retrofit2.Response
@@ -32,7 +33,7 @@ class OtherInfoWindow : Activity() {
         open(intent.getStringExtra("artistName"))
     }
 
-    fun getARtistInfo(artistName: String?) {
+    private fun getARtistInfo(artistName: String?) {
 
         // create
         val retrofit = Retrofit.Builder()
@@ -43,9 +44,9 @@ class OtherInfoWindow : Activity() {
         Log.e("TAG", "artistName $artistName")
         Thread {
             val article = dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
-            var text = ""
+            var artistInformation = ""
             if (article != null) { // exists in db
-                text = "[*]" + article.biography
+                artistInformation = "[*]" + article.biography
                 val urlString = article.articleUrl
                 findViewById<View>(R.id.openUrlButton1).setOnClickListener {
                     val intent = Intent(Intent.ACTION_VIEW)
@@ -57,36 +58,19 @@ class OtherInfoWindow : Activity() {
                 try {
                     callResponse = lastFMAPI.getArtistInfo(artistName).execute()
                     Log.e("TAG", "JSON " + callResponse.body())
-                    val gson = Gson()
-                    val jobj = gson.fromJson(callResponse.body(), JsonObject::class.java)
-                    val artist = jobj["artist"].getAsJsonObject()
-                    val bio = artist["bio"].getAsJsonObject()
-                    val extract = bio["content"]
-                    val url = artist["url"]
-                    if (extract == null) {
-                        text = "No Results"
-                    } else {
-                        text = extract.asString.replace("\\n", "\n")
-                        text = textToHtml(text, artistName)
-
-
-                        // save to DB  <o/
-                        val text2 = text
-                        Thread {
-                            dataBase!!.ArticleDao().insertArticle(
-                                ArticleEntity(
-                                    artistName, text2, url.asString
-                                )
-                            )
+                    val jobj = jsonObject(callResponse)
+                    val artist = getArtist(jobj)
+                    val bio = getBio(artist)
+                    val extract = getExtract(bio)
+                    val url = getUrl(artist)
+                    artistInformation = extract?.asString?.replace("\\n", "\n")?.let {
+                        textToHtml(it, artistName).also { info ->
+                            url?.let { url -> saveInformationToBD(info, artistName, url) }
                         }
-                            .start()
-                    }
-                    val urlString = url.asString
-                    findViewById<View>(R.id.openUrlButton1).setOnClickListener {
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.setData(Uri.parse(urlString))
-                        startActivity(intent)
-                    }
+                    } ?: "No Results"
+
+                    url?.let {  triggerWebBrowsingActivity(url) }
+
                 } catch (e1: IOException) {
                     Log.e("TAG", "Error $e1")
                     e1.printStackTrace()
@@ -95,12 +79,50 @@ class OtherInfoWindow : Activity() {
             val imageUrl =
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
             Log.e("TAG", "Get Image from $imageUrl")
-            val finalText = text
+            val finalText = artistInformation
             runOnUiThread {
                 Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
                 textPane1!!.text = Html.fromHtml(finalText)
             }
         }.start()
+    }
+
+    private fun getUrl(artist: JsonObject?) = artist?.get("url")
+
+    private fun getExtract(bio: JsonObject?) = bio?.get("content")
+
+    private fun getBio(artist: JsonObject?) =
+        artist?.get("bio")?.getAsJsonObject()
+
+    private fun getArtist(jobj: JsonObject?) = jobj?.get("artist")?.getAsJsonObject()
+
+    private fun jsonObject(callResponse: Response<String>): JsonObject? {
+        val gson = Gson()
+        return gson.fromJson(callResponse.body(), JsonObject::class.java)
+    }
+
+    private fun triggerWebBrowsingActivity(url: JsonElement) {
+        val urlString = url.asString
+        findViewById<View>(R.id.openUrlButton1).setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setData(Uri.parse(urlString))
+            startActivity(intent)
+        }
+    }
+
+    private fun saveInformationToBD(
+        artistInformation: String,
+        artistName: String,
+        url: JsonElement
+    ) {
+        Thread {
+            dataBase!!.ArticleDao().insertArticle(
+                ArticleEntity(
+                    artistName, artistInformation, url.asString
+                )
+            )
+        }
+            .start()
     }
 
     private var dataBase: ArticleDatabase? = null
