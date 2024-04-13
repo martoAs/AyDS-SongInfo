@@ -54,27 +54,7 @@ class OtherInfoWindow : Activity() {
                     startActivity(intent)
                 }
             } else { // get from service
-                val callResponse: Response<String>
-                try {
-                    callResponse = lastFMAPI.getArtistInfo(artistName).execute()
-                    Log.e("TAG", "JSON " + callResponse.body())
-                    val jobj = jsonObject(callResponse)
-                    val artist = getArtist(jobj)
-                    val bio = getBio(artist)
-                    val extract = getExtract(bio)
-                    val url = getUrl(artist)
-                    artistInformation = extract?.asString?.replace("\\n", "\n")?.let {
-                        textToHtml(it, artistName).also { info ->
-                            url?.let { url -> saveInformationToBD(info, artistName, url) }
-                        }
-                    } ?: "No Results"
-
-                    url?.let {  triggerWebBrowsingActivity(url) }
-
-                } catch (e1: IOException) {
-                    Log.e("TAG", "Error $e1")
-                    e1.printStackTrace()
-                }
+                artistInformation = getArtistInfoFromService(lastFMAPI, artistName, artistInformation)
             }
             val imageUrl =
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
@@ -85,6 +65,36 @@ class OtherInfoWindow : Activity() {
                 textPane1!!.text = Html.fromHtml(finalText)
             }
         }.start()
+    }
+
+    private fun getArtistInfoFromService(
+        lastFMAPI: LastFMAPI,
+        artistName: String?,
+        artistInformation: String
+    ): String {
+        var artistInformation1 = artistInformation
+        val callResponse: Response<String>
+        try {
+            callResponse = artistName?.let { lastFMAPI.getArtistInfo(it).execute() }!!
+            Log.e("TAG", "JSON " + callResponse.body())
+            val jobj = jsonObject(callResponse)
+            val artist = getArtist(jobj)
+            val bio = getBio(artist)
+            val extract = getExtract(bio)
+            val url = getUrl(artist)
+            artistInformation1 = extract?.asString?.replace("\\n", "\n")?.let {
+                textToHtml(it, artistName).also { info ->
+                    url?.let { url -> saveInformationToBD(info, artistName, url) }
+                }
+            } ?: "No Results"
+
+            url?.let { triggerWebBrowsingActivity(url) }
+
+        } catch (e1: IOException) {
+            Log.e("TAG", "Error $e1")
+            e1.printStackTrace()
+        }
+        return artistInformation1
     }
 
     private fun getUrl(artist: JsonObject?) = artist?.get("url")
