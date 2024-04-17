@@ -50,7 +50,7 @@ class OtherInfoWindow : Activity() {
                 artistInformation = "[*]" + it.biography
                 triggerWebBrowsingActivity()
             } ?: run {
-                artistInformation = getArtistInfoFromService(ARTIST_NAME, artistInformation)
+                artistInformation = getArtistInfoFromService(artistInformation)
             }
             Log.e("TAG", "Get Image from $LASTFM_IMAGE")
             updateUserInterface(artistInformation)
@@ -69,21 +69,18 @@ class OtherInfoWindow : Activity() {
 
     private fun getLastFMAPI(): LastFMAPI = buildRetrofit().create(LastFMAPI::class.java)
     private fun buildRetrofit(): Retrofit = Retrofit.Builder().baseUrl(AUDIOSCROBBLER_PATH).addConverterFactory(ScalarsConverterFactory.create()).build()
-    private fun getArtistInfoFromService(
-        artistName: String?,
-        artistInformation: String
-    ): String {
-        var artistInformation1 = artistInformation
+    private fun getArtistInfoFromService(artistInformation: String): String {
+        var artistInfo = artistInformation
         val callResponse: Response<String>
         try {
-            callResponse = artistName?.let { getLastFMAPI().getArtistInfo(it).execute() }!!
+            callResponse = ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() }!!
             Log.e("TAG", "JSON " + callResponse.body())
             ArtistJSON.setJSON(callResponse)
 
             Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
-            artistInformation1 = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let {
-                textToHtml(it, artistName).also { info ->
-                    ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, artistName, url) }
+            artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let {
+                textToHtml(it, ARTIST_NAME).also { info ->
+                    ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, ARTIST_NAME!!, url) }
                 }
             } ?: "No Results"
 
@@ -93,7 +90,7 @@ class OtherInfoWindow : Activity() {
             Log.e("TAG", "Error $e1")
             e1.printStackTrace()
         }
-        return artistInformation1
+        return artistInfo
     }
 
     private fun triggerWebBrowsingActivity() {
