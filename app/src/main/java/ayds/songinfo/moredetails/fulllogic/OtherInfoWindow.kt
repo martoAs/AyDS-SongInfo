@@ -23,19 +23,23 @@ import java.util.Locale
 
 class OtherInfoWindow : Activity() {
     private var artistInfoDisplayer: TextView? = null
+    private var dataBase: ArticleDatabase? = null
+    private val LASTFM_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
+    private val AUDIOSCROBBLER_PATH = "https://ws.audioscrobbler.com/2.0/"
 
-    //private JPanel imagePanel;
-    // private JLabel posterImageLabel;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_info)
-        artistInfoDisplayer = findViewById(R.id.textPane1)
-        open(intent.getStringExtra("artistName"))
+        initializeArtistInfoDisplayer()
+        buildDatabase()
+        getARtistInfo(intent.getStringExtra("artistName"))
     }
+
+    private fun initializeArtistInfoDisplayer() { artistInfoDisplayer = findViewById(R.id.textPane1) }
+    private fun buildDatabase(){ dataBase = databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build() }
 
     private fun getARtistInfo(artistName: String?) {
 
-        // create
         val retrofit = getRetrofit()
         val lastFMAPI = getLastFMAPI(retrofit)
         Log.e("TAG", "artistName $artistName")
@@ -48,19 +52,17 @@ class OtherInfoWindow : Activity() {
             } ?: run {
                 artistInformation = getArtistInfoFromService(lastFMAPI, artistName, artistInformation)
             }
-            val imageUrl =
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
-            Log.e("TAG", "Get Image from $imageUrl")
-            updateUserInterface(artistInformation, imageUrl)
+            Log.e("TAG", "Get Image from $LASTFM_IMAGE")
+            updateUserInterface(artistInformation)
         }.start()
     }
 
     private fun getArticle(artistName: String?) =
         dataBase!!.ArticleDao().getArticleByArtistName(artistName!!)
 
-    private fun updateUserInterface(artistInformation: String, imageUrl: String) {
+    private fun updateUserInterface(artistInformation: String) {
         runOnUiThread {
-            Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
+            Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
             artistInfoDisplayer!!.text = Html.fromHtml(artistInformation)
         }
     }
@@ -69,7 +71,7 @@ class OtherInfoWindow : Activity() {
         retrofit.create(LastFMAPI::class.java)
 
     private fun getRetrofit(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://ws.audioscrobbler.com/2.0/")
+        .baseUrl(AUDIOSCROBBLER_PATH)
         .addConverterFactory(ScalarsConverterFactory.create())
         .build()
 
@@ -138,18 +140,6 @@ class OtherInfoWindow : Activity() {
             )
         }
             .start()
-    }
-
-    private var dataBase: ArticleDatabase? = null
-    private fun open(artist: String?) {
-        dataBase =
-            databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
-        Thread {
-            dataBase!!.ArticleDao().insertArticle(ArticleEntity("test", "sarasa", ""))
-            Log.e("TAG", "" + dataBase!!.ArticleDao().getArticleByArtistName("test"))
-            Log.e("TAG", "" + dataBase!!.ArticleDao().getArticleByArtistName("nada"))
-        }.start()
-        getARtistInfo(artist)
     }
 
     companion object {
