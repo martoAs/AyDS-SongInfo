@@ -141,7 +141,7 @@ class OtherInfoWindow : Activity() {
             val gson = Gson()
             artistJSON = gson.fromJson(callResponse.body(), JsonObject::class.java)
         }
-        fun getUrl() = artistJSON.get("url")
+        fun getUrl(): JsonElement? = artistJSON.get("url")
         fun getExtract() = getBio()?.get("content")
         private fun getBio() = getArtist()?.get("bio")?.getAsJsonObject()
         private fun getArtist() = artistJSON.get("artist")?.getAsJsonObject()
