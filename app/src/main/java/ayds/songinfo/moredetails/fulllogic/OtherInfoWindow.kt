@@ -15,10 +15,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.io.IOException
 import java.util.Locale
 
 class OtherInfoWindow : Activity() {
@@ -71,25 +69,25 @@ class OtherInfoWindow : Activity() {
     private fun buildRetrofit(): Retrofit = Retrofit.Builder().baseUrl(AUDIOSCROBBLER_PATH).addConverterFactory(ScalarsConverterFactory.create()).build()
     private fun getArtistInfoFromService(artistInformation: String): String {
         var artistInfo = artistInformation
-        val callResponse: Response<String>
-        try {
-            callResponse = ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() }!!
-            Log.e("TAG", "JSON " + callResponse.body())
-            ArtistJSON.setJSON(callResponse)
+        val callResponse = runCatching { ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() } }
+        if (callResponse.isSuccess) {
+            Log.e("TAG", "JSON " + callResponse.getOrNull()?.body())
+            callResponse.getOrNull()?.body()?.let {
+                ArtistJSON.setJSON(it)
+                Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
+                artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let { text ->
+                    textToHtml(text, ARTIST_NAME).also { info ->
+                        ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, ARTIST_NAME!!, url) }
+                    }
+                } ?: "No Results"
 
-            Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
-            artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let {
-                textToHtml(it, ARTIST_NAME).also { info ->
-                    ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, ARTIST_NAME!!, url) }
-                }
-            } ?: "No Results"
-
-            ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity() }
-
-        } catch (e1: IOException) {
-            Log.e("TAG", "Error $e1")
-            e1.printStackTrace()
+                ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity() }
+            }
+        } else {
+            Log.e("TAG", "Error ", callResponse.exceptionOrNull())
+            callResponse.exceptionOrNull()?.printStackTrace()
         }
+
         return artistInfo
     }
 
@@ -137,9 +135,9 @@ class OtherInfoWindow : Activity() {
 
     object ArtistJSON{
         private var artistJSON = JsonObject()
-        fun setJSON(callResponse: Response<String>){
+        fun setJSON(callResponse: String){
             val gson = Gson()
-            artistJSON = gson.fromJson(callResponse.body(), JsonObject::class.java)
+            artistJSON = gson.fromJson(callResponse, JsonObject::class.java)
         }
         fun getUrl(): JsonElement? = artistJSON.get("url")
         fun getExtract() = getBio()?.get("content")
