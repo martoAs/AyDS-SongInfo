@@ -43,36 +43,28 @@ class OtherInfoWindow : Activity() {
     private fun getARtistInfo() {
         Log.e("TAG", "artistName $ARTIST_NAME")
         Thread {
-            var artistInformation = ""
-            getArticle()?.let {
-                artistInformation = "[*]" + it.biography
-                triggerWebBrowsingActivity()
-            } ?: run {
-                artistInformation = getArtistInfoFromService(artistInformation)
-            }
-            Log.e("TAG", "Get Image from $LASTFM_IMAGE")
-            updateUserInterface(artistInformation)
+            getArticle()?.let{ triggerWebBrowsingActivity(it.articleUrl) }
+            updateUserInterface(artistInformation())
         }.start()
     }
 
     private fun getArticle() = ARTIST_NAME?.let { dataBase!!.ArticleDao().getArticleByArtistName(it) }
-
+    private fun artistInformation():String = getArticle()?.let { return "[*]" + it.biography } ?: run { getArtistInfoFromService() }
     private fun updateUserInterface(artistInformation: String) {
-        Log.e("TAG", "thread artistInfo $artistInformation")
         runOnUiThread {
             Picasso.get().load(LASTFM_IMAGE).into(findViewById<View>(R.id.imageView1) as ImageView)
-            artistInfoDisplayer!!.text = Html.fromHtml(artistInformation)
+            artistInfoDisplayer!!.text = Html.fromHtml(artistInformation, Html.FROM_HTML_MODE_LEGACY)
         }
     }
 
     private fun getLastFMAPI(): LastFMAPI = buildRetrofit().create(LastFMAPI::class.java)
     private fun buildRetrofit(): Retrofit = Retrofit.Builder().baseUrl(AUDIOSCROBBLER_PATH).addConverterFactory(ScalarsConverterFactory.create()).build()
-    private fun getArtistInfoFromService(artistInformation: String): String {
-        var artistInfo = artistInformation
+    private fun getArtistInfoFromService(): String {
+        var artistInfo = ""
         val callResponse = runCatching { ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() } }
         if (callResponse.isSuccess) {
             Log.e("TAG", "JSON " + callResponse.getOrNull()?.body())
-            callResponse.getOrNull()?.body()?.let {
+            callResponse.getOrNull()?.body()?.let { it ->
                 ArtistJSON.setJSON(it)
                 Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
                 artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let { text ->
@@ -80,8 +72,7 @@ class OtherInfoWindow : Activity() {
                         ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, ARTIST_NAME!!, url) }
                     }
                 } ?: "No Results"
-
-                ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity() }
+                ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity(it.asString) }
             }
         } else {
             Log.e("TAG", "Error ", callResponse.exceptionOrNull())
@@ -91,12 +82,12 @@ class OtherInfoWindow : Activity() {
         return artistInfo
     }
 
-    private fun triggerWebBrowsingActivity() {
-        findViewById<View>(R.id.openUrlButton1).setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setData(Uri.parse(ArtistJSON.getUrl()?.asString))
-            startActivity(intent)
-        }
+    private fun triggerWebBrowsingActivity(articleURL:String) {
+            findViewById<View>(R.id.openUrlButton1).setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setData(Uri.parse(articleURL))
+                startActivity(intent)
+            }
     }
 
     private fun saveInformationToBD(
@@ -139,7 +130,7 @@ class OtherInfoWindow : Activity() {
             val gson = Gson()
             artistJSON = gson.fromJson(callResponse, JsonObject::class.java)
         }
-        fun getUrl(): JsonElement? = artistJSON.get("url")
+        fun getUrl(): JsonElement? = getArtist()?.get("url")
         fun getExtract() = getBio()?.get("content")
         private fun getBio() = getArtist()?.get("bio")?.getAsJsonObject()
         private fun getArtist() = artistJSON.get("artist")?.getAsJsonObject()
