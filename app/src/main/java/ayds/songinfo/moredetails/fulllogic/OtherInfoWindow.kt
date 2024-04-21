@@ -61,25 +61,30 @@ class OtherInfoWindow : Activity() {
     private fun buildRetrofit(): Retrofit = Retrofit.Builder().baseUrl(AUDIOSCROBBLER_PATH).addConverterFactory(ScalarsConverterFactory.create()).build()
     private fun getArtistInfoFromService(): String {
         var artistInfo = ""
-        val callResponse = runCatching { ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() } }
-        if (callResponse.isSuccess) {
-            Log.e("TAG", "JSON " + callResponse.getOrNull()?.body())
-            callResponse.getOrNull()?.body()?.let { it ->
-                ArtistJSON.setJSON(it)
-                Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
-                artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let { text ->
-                    textToHtml(text, ARTIST_NAME).also { info ->
-                        ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, ARTIST_NAME!!, url) }
+        getCallBody()?.let { it ->
+            ArtistJSON.setJSON(it)
+            Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
+            artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let { text ->
+                textToHtml(text, ARTIST_NAME).also { info ->
+                    ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, url) }
                     }
                 } ?: "No Results"
-                ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity(it.asString) }
-            }
-        } else {
-            Log.e("TAG", "Error ", callResponse.exceptionOrNull())
-            callResponse.exceptionOrNull()?.printStackTrace()
+            ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity(it.asString) }
         }
 
         return artistInfo
+    }
+
+    private fun getCallResponse() = runCatching { ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() } }
+
+    private fun getCallBody() :String?{
+        Log.e("TAG", "JSON " + getCallResponse().getOrNull()?.body())
+        return if (getCallResponse().isSuccess) getCallResponse().getOrNull()?.body()
+        else {
+            Log.e("TAG", "Error ", getCallResponse().exceptionOrNull())
+            getCallResponse().exceptionOrNull()?.printStackTrace()
+            null
+        }
     }
 
     private fun triggerWebBrowsingActivity(articleURL:String) {
@@ -92,13 +97,12 @@ class OtherInfoWindow : Activity() {
 
     private fun saveInformationToBD(
         artistInformation: String,
-        artistName: String,
         url: JsonElement
     ) {
         Thread {
             dataBase!!.ArticleDao().insertArticle(
                 ArticleEntity(
-                    artistName, artistInformation, url.asString
+                    ARTIST_NAME!!, artistInformation, url.asString
                 )
             )
         }
