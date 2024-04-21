@@ -61,19 +61,21 @@ class OtherInfoWindow : Activity() {
     private fun buildRetrofit(): Retrofit = Retrofit.Builder().baseUrl(AUDIOSCROBBLER_PATH).addConverterFactory(ScalarsConverterFactory.create()).build()
     private fun getArtistInfoFromService(): String {
         var artistInfo = ""
-        getCallBody()?.let { it ->
+        getCallBody()?.let {
             ArtistJSON.setJSON(it)
             Log.e("TAG", "JSON EXTRACT " + ArtistJSON.getExtract())
-            artistInfo = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")?.let { text ->
-                textToHtml(text, ARTIST_NAME).also { info ->
-                    ArtistJSON.getUrl()?.let { url -> saveInformationToBD(info, url) }
-                    }
-                } ?: "No Results"
-            ArtistJSON.getUrl()?.let { triggerWebBrowsingActivity(it.asString) }
+            artistInfo = JSONtoHTML()?: "No Results"
+            JSONtoHTML()?.let { info -> saveInformationToBD(info, ArtistJSON.getUrl()!!) }
+            triggerWebBrowsingActivity(ArtistJSON.getUrl()!!.asString)
         }
-
         return artistInfo
     }
+
+
+    private fun JSONtoHTML() = getFormattedArtistExtract()?.let {textToHtml(it, ARTIST_NAME)}
+
+    private fun getFormattedArtistExtract() = ArtistJSON.getExtract()?.asString?.replace("\\n", "\n")
+
 
     private fun getCallResponse() = runCatching { ARTIST_NAME?.let { getLastFMAPI().getArtistInfo(it).execute() } }
 
