@@ -4,7 +4,6 @@ import ayds.songinfo.moredetails.fulllogic.data.ArticleLocalStorage
 import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackService
 import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
 import ayds.songinfo.moredetails.fulllogic.domain.Article.EmptyArticle
-import java.io.IOException
 
 interface ArtistArticleRepository {
     fun getArticleByArtistName(artistName:String?): Article
@@ -15,38 +14,23 @@ internal class ArtistArticleRepositoryImpl(private val articleLocalStorage: Arti
 ) : ArtistArticleRepository{
     override fun getArticleByArtistName(artistName: String?):Article{
         artistName?.let {
-            val databaseArticle = articleLocalStorage.getArticleByArtistName(artistName)
 
-            val artistArticle: ArtistArticle
+            var artistArticle = articleLocalStorage.getArticleByArtistName(artistName)
 
-            if (databaseArticle != null) {
-                artistArticle = databaseArticle.markItAsLocal()
+            if (artistArticle != null){
+                artistArticle = artistArticle.markItAsLocal()
             } else {
-                artistArticle = getArticleFromService(artistName)
-                if (artistArticle.biography.isNotEmpty()) {
-                    saveInformationToBD(artistArticle)
+                artistArticle = articleTrackService.getArticle(artistName)
+
+                artistArticle?.let{
+                    artistArticle.biography.isNotEmpty().let { articleLocalStorage.insertArticle(artistArticle) }
                 }
             }
-            return artistArticle
-        }?:let{ return EmptyArticle}
+            return artistArticle ?: EmptyArticle
+
+        }?:let{ return EmptyArticle }
     }
 
     private fun ArtistArticle.markItAsLocal() = copy(biography = "[*]$biography")
-
-    private fun getArticleFromService(artistName: String): ArtistArticle {
-
-        var artistArticle = ArtistArticle(artistName, "", "")
-        try {
-           articleTrackService.getArticle(artistName)
-        } catch (e1: IOException) {
-            e1.printStackTrace()
-        }
-
-        return artistArticle
-    }
-
-    private fun saveInformationToBD(artistArticle: ArtistArticle) {
-        articleLocalStorage.insertArticle(artistArticle)
-    }
 
 }

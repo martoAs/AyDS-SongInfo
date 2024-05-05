@@ -8,91 +8,61 @@ import android.text.Html
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.room.Room.databaseBuilder
 import ayds.songinfo.R
-import ayds.songinfo.moredetails.fulllogic.LastFMAPI
-
-import ayds.songinfo.moredetails.fulllogic.data.ArticleDatabase
-
+import ayds.songinfo.moredetails.fulllogic.dependency_injector.MoreDetailsInjector
 import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
-
-import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepository
-
-import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
+import ayds.songinfo.moredetails.fulllogic.presentation.MoreDetailsUIState.Companion.LASTFM_IMAGE
 import com.squareup.picasso.Picasso
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.Locale
 
-private const val LASTFM_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
-private const val AUDIOSCROBBLER_PATH = "https://ws.audioscrobbler.com/2.0/"
-private const val ARTICLE_BDNAME = "database-article"
-
-class MoreDetailsView(private val repository: ArtistArticleRepository) : Activity() {
+class MoreDetailsView():Activity() {
     private lateinit var artistInfoDisplayer: TextView
-    private lateinit var articleDatabase: ArticleDatabase
     private lateinit var openUrlButton : Button
-    private lateinit var lastFMAPI : LastFMAPI
     private lateinit var lastFMImageView : ImageView
+    private var UIState: MoreDetailsUIState = MoreDetailsUIState("")
+    private lateinit var injector: MoreDetailsInjector
+    private lateinit var presenter: MoreDetailsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MoreDetailsInjector.init(this)
+        presenter = injector.getMoreDetailsPresenter()
         setContentView(R.layout.activity_other_info)
 
         initializeViewProperties()
-        buildDatabase()
-        initLastFMAPI()
-        getArtistInfoAsync()
+        getArtistArticleAsync()
     }
-
 
     private fun initializeViewProperties() {
         artistInfoDisplayer = findViewById(R.id.textPane1)
         openUrlButton = findViewById(R.id.openUrlButton)
         lastFMImageView = findViewById(R.id.lastFMImageView)
     }
-    private fun buildDatabase(){ articleDatabase = databaseBuilder(this, ArticleDatabase::class.java, ARTICLE_BDNAME).build() }
 
-    private fun initLastFMAPI() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(AUDIOSCROBBLER_PATH)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-
-        lastFMAPI = retrofit.create(LastFMAPI::class.java)
-    }
-
-    private fun getArtistInfoAsync() {
+    private fun getArtistArticleAsync() {
         Thread {
-            getArtistInfo()
+            getArtistArticle()
         }.start()
     }
 
-    private fun getArtistInfo() {
-        val artistArticle = repository.getArticleByArtistName(intent.getStringExtra(ARTIST_NAME_EXTRA))
-        updateUserInterface(artistArticle)
+    private fun getArtistArticle(){
+        val newState = presenter.notifyOpenArticle(MoreDetailsUIEvent.openArticle, intent.getStringExtra(ARTIST_NAME_EXTRA))
+        updateState(newState)
+        updateUserInterface()
     }
 
     private fun updateUserInterface(artistArticle: ArtistArticle) {
         runOnUiThread {
-            updateOpenUrlButton(artistArticle)
+            updateOpenUrlButton()
             updateLastFMLogo()
             updateArticleText(artistArticle)
         }
     }
 
-    private fun updateOpenUrlButton(artistArticle: ArtistArticle) {
+    private fun updateOpenUrlButton() {
        openUrlButton.setOnClickListener {
-            triggerWebBrowsingActivity(artistArticle.articleUrl)
+            triggerWebBrowsingActivity()
         }
-    }
-
-    private fun triggerWebBrowsingActivity(url: String) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setData(Uri.parse(url))
-        startActivity(intent)
     }
 
     private fun updateLastFMLogo() {
@@ -102,6 +72,12 @@ class MoreDetailsView(private val repository: ArtistArticleRepository) : Activit
     private fun updateArticleText(artistArticle: ArtistArticle) {
         val text = artistArticle.biography.replace("\\n", "\n")
         artistInfoDisplayer.text = Html.fromHtml(textToHtml(text, artistArticle.artistName))
+    }
+
+    private fun triggerWebBrowsingActivity() {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setData(Uri.parse(UIState.articleURL))
+        startActivity(intent)
     }
 
     private fun textToHtml(text: String, term: String?): String {
@@ -120,6 +96,9 @@ class MoreDetailsView(private val repository: ArtistArticleRepository) : Activit
         return builder.toString()
     }
 
+    private fun updateState(newState:MoreDetailsUIState){
+        UIState = UIState.copy( articleURL = newState.articleURL )
+    }
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
     }

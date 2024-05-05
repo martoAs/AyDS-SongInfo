@@ -1,12 +1,11 @@
 package ayds.songinfo.moredetails.fulllogic.data
-import ayds.songinfo.moredetails.fulllogic.domain.Article
 import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 
 interface LastfmToArticleResolver {
-    fun getArticleFromExternalData(serviceData: String?, artistName: String): Article?
+    fun getArticleFromExternalData(serviceData: String?, artistName: String): ArtistArticle?
 }
 
 private const val URL = "url"
