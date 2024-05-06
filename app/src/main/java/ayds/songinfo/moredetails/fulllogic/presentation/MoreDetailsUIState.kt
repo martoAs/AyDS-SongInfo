@@ -1,6 +1,7 @@
 package ayds.songinfo.moredetails.fulllogic.presentation
 
 data class MoreDetailsUIState(
+    val articleBiography: String,
     val articleURL: String
 ){
     companion object {
