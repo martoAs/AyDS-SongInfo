@@ -23,34 +23,49 @@ class MoreDetailsView():Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MoreDetailsInjector.init(this)
-        presenter = injector.getMoreDetailsPresenter()
-        setContentView(R.layout.activity_other_info)
 
+
+        initializeComponents()
         initializeViewProperties()
         initializeObservables()
         notifyPresenter()
     }
 
-    private fun initializeViewProperties() {
+    private fun initializeComponents() { //GOOD
+        MoreDetailsInjector.init(this)
+        presenter = injector.getMoreDetailsPresenter()
+    }
+
+    private fun initializeViewProperties() { //GOOD
+        setContentView(R.layout.activity_other_info)
         artistInfoDisplayer = findViewById(R.id.textPane1)
         openUrlButton = findViewById(R.id.openUrlButton)
         lastFMImageView = findViewById(R.id.lastFMImageView)
     }
 
-    private fun initializeObservables(){
+    private fun initializeObservables(){ //GOOD
         presenter.artistBiographyObservable.subscribe{ updateBiography(it) }
         presenter.articleUrlObservable.subscribe{ updateUrl(it)}
     }
 
-    private fun updateBiography(biography: String){
+    private fun updateBiography(biography: String){ //GOOD
         UIState = UIState.copy(articleBiography = biography)
         updateUserInterface()
     }
+    private fun updateUrl(urlString: String){
+        UIState = UIState.copy(articleURL = urlString)
+        updateOpenUrlButton()
+    }
+
+    private fun notifyPresenter(){
+        val artist = getArtist()
+        artist?.let { presenter.notifyOpenArticle(it) }
+    }
+
+    private fun getArtist() = intent.getStringExtra(ARTIST_NAME_EXTRA)
 
     private fun updateUserInterface() {
         runOnUiThread {
-            updateOpenUrlButton()
             updateLastFMLogo()
             updateArticleText()
         }
@@ -64,8 +79,10 @@ class MoreDetailsView():Activity() {
 
     private fun triggerWebBrowsingActivity() {
         val intent = Intent(Intent.ACTION_VIEW)
-        intent.setData(Uri.parse(UIState.articleURL))
-        startActivity(intent)
+        if(UIState.articleURL!=""){
+            intent.setData(Uri.parse(UIState.articleURL))
+            startActivity(intent)
+        }
     }
 
     private fun updateLastFMLogo() {
@@ -73,21 +90,10 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateArticleText() {
-        var text = UIState.articleBiography
-        text = text.replace("\\n", "\n")
-        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography,  Html.FROM_HTML_MODE_LEGACY)
+        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
     }
 
-    private fun updateUrl(urlString: String){
-        UIState = UIState.copy(articleURL = urlString)
-    }
 
-    private fun notifyPresenter(){
-        val artist = intent.getStringExtra(ARTIST_NAME_EXTRA)
-        if (artist != null) {
-                presenter.notifyOpenArticle(artist)
-        }
-    }
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"

@@ -34,41 +34,7 @@ internal class LastfmToArticleResolverImpl:LastfmToArticleResolver{
     private fun getExtract(bio: JsonObject): JsonElement? = bio[CONTENT]
     private fun getBio(artist: JsonObject): JsonObject = artist[BIO].getAsJsonObject()
     private fun getArtist(jobj: JsonObject): JsonObject = jobj[ARTIST].getAsJsonObject()
-
-    private fun getBiographyFromJSON(
-        artist: JsonObject,
-        artistName: String
-    ): String {
-        val extract = getExtract(getBio(artist))
-        var bio = extract?.asString?.replace("\\n", "\n")
-      //  bio = bio?.let { jsonToHtml(it, artistName) }
-        val text = extract?.let{ jsonToHtml(extract.asString.replace("\\n", "\n"), artistName)} ?: NO_RESULTS
-        return text
-    }
-
-    private fun getBioText(artist : JsonObject, artistName: String): String? {
-        val bio = getBio(artist)
-        val extract = getBioContent(bio)
-        val text = if (extract != null) {
-            getTextFromBioContent(extract, artistName)
-        } else
-            null
-        return text
-    }
-
-    private fun getTextFromBioContent(
-        extract: JsonElement,
-        artistName: String
-    ): String {
-        var text = extract.asString.replace("\\n", "\n")
-        text = textToHtml(text, artistName)
-        return text
-    }
-
-    private fun getBioContent(bio: JsonObject): JsonElement? =
-        bio[CONTENT]
-
-    private fun jsonToHtml(text: String, term: String?): String {
+    private fun textToHtml(text: String, term: String?): String {
         val builder = StringBuilder()
         builder.append("<html><div width=400>")
         builder.append("<font face=\"arial\">")
@@ -83,5 +49,26 @@ internal class LastfmToArticleResolverImpl:LastfmToArticleResolver{
         builder.append("</font></div></html>")
         return builder.toString()
     }
+    private fun getBiographyFromJSON(
+        artist: JsonObject,
+        artistName: String
+    ): String {
+        val bio = getBio(artist)
+        val extract = getExtract(bio)
+
+        return extract?.let { getFormattedText(it, artistName) } ?: NO_RESULTS
+    }
+
+    private fun getFormattedText(
+        extract: JsonElement,
+        artistName: String
+    ): String {
+        var text = extract.asString.replace("\\n", "\n")
+        text = textToHtml(text, artistName)
+        return text
+    }
+
+
+
 
 }

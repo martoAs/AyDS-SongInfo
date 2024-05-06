@@ -13,7 +13,6 @@ interface MoreDetailsPresenter{
 }
 
 class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository): MoreDetailsPresenter{
-    private lateinit var UIState: MoreDetailsUIState
     override val articleUrlObservable = Subject<String>()
     override val artistBiographyObservable = Subject<String>()
     override fun notifyOpenArticle(artistName: String?){
@@ -24,8 +23,7 @@ class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository):
 
     private fun getArticleFromRepository(artistName: String?){
         artistName?.let{
-            val article = repository.getArticleByArtistName(artistName)
-            when(article){
+            when(val article = repository.getArticleByArtistName(artistName)){
                 is ArtistArticle -> {articleUrlObservable.notify(article.articleUrl)
                                      artistBiographyObservable.notify(article.biography)}
                 is EmptyArticle -> {articleUrlObservable.notify("")

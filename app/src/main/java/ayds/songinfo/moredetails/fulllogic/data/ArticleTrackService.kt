@@ -1,5 +1,4 @@
 package ayds.songinfo.moredetails.fulllogic.data
-import ayds.songinfo.moredetails.fulllogic.LastFMAPI
 import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
 
 interface ArticleTrackService {

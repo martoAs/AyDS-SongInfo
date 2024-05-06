@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.fulllogic.dependency_injector
 
-import ayds.songinfo.moredetails.fulllogic.LastFMAPI
+import ayds.songinfo.moredetails.fulllogic.data.LastFMAPI
 import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackService
 import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackServiceImpl
 import ayds.songinfo.moredetails.fulllogic.data.LastfmToArticleResolver
