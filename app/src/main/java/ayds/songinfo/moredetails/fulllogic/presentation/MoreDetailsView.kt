@@ -18,7 +18,7 @@ class MoreDetailsView():Activity() {
     private lateinit var openUrlButton : Button
     private lateinit var lastFMImageView : ImageView
     private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "")
-    private lateinit var injector: MoreDetailsInjector
+   // private lateinit var injector: MoreDetailsInjector
     private lateinit var presenter: MoreDetailsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,24 +31,24 @@ class MoreDetailsView():Activity() {
         notifyPresenter()
     }
 
-    private fun initializeComponents() { //GOOD
+    private fun initializeComponents() {
         MoreDetailsInjector.init(this)
-        presenter = injector.getMoreDetailsPresenter()
+        presenter = MoreDetailsInjector.getMoreDetailsPresenter()
     }
 
-    private fun initializeViewProperties() { //GOOD
+    private fun initializeViewProperties() {
         setContentView(R.layout.activity_other_info)
         artistInfoDisplayer = findViewById(R.id.textPane1)
         openUrlButton = findViewById(R.id.openUrlButton)
         lastFMImageView = findViewById(R.id.lastFMImageView)
     }
 
-    private fun initializeObservables(){ //GOOD
+    private fun initializeObservables(){
         presenter.artistBiographyObservable.subscribe{ updateBiography(it) }
         presenter.articleUrlObservable.subscribe{ updateUrl(it)}
     }
 
-    private fun updateBiography(biography: String){ //GOOD
+    private fun updateBiography(biography: String){
         UIState = UIState.copy(articleBiography = biography)
         updateUserInterface()
     }

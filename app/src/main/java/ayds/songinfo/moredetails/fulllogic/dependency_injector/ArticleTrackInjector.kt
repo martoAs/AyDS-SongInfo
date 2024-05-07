@@ -9,14 +9,22 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object ArticleTrackInjector {
-    private const val AUDIOSCROBBLER_PATH = "https://ws.audioscrobbler.com/2.0/"
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(AUDIOSCROBBLER_PATH)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .build()
 
-    private val lastFMAPI = retrofit.create(LastFMAPI::class.java)
-    private val lastfmToArticleResolver: LastfmToArticleResolver = LastfmToArticleResolverImpl()
+        private const val AUDIOSCROBBLER_PATH = "https://ws.audioscrobbler.com/2.0/"
+        private lateinit var retrofit: Retrofit
+        private lateinit var lastFMAPI: LastFMAPI
+        private lateinit var lastfmToArticleResolver: LastfmToArticleResolver
+        lateinit var articleTrackService: ArticleTrackService
+        fun init() {
+            retrofit = Retrofit.Builder()
+                .baseUrl(AUDIOSCROBBLER_PATH)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build()
 
-    val articleTrackService: ArticleTrackService = ArticleTrackServiceImpl(lastFMAPI, lastfmToArticleResolver)
+            lastFMAPI = retrofit.create(LastFMAPI::class.java)
+            lastfmToArticleResolver = LastfmToArticleResolverImpl()
+
+            articleTrackService = ArticleTrackServiceImpl(lastFMAPI, lastfmToArticleResolver)
+        }
+
 }
