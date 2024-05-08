@@ -17,11 +17,12 @@ class MoreDetailsView():Activity() {
     private lateinit var artistInfoDisplayer: TextView
     private lateinit var openUrlButton : Button
     private lateinit var lastFMImageView : ImageView
-    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "", false)
+    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "",false)
     private lateinit var presenter: MoreDetailsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
 
         initializeComponents()
         initializeViewProperties()
@@ -43,7 +44,7 @@ class MoreDetailsView():Activity() {
 
     private fun initializeObservables(){
         presenter.artistBiographyObservable.subscribe{ updateBiography(it) }
-        presenter.articleUrlObservable.subscribe{ updateUrl(it) }
+        presenter.articleUrlObservable.subscribe{ updateUrl(it)}
         presenter.actionsEnabled.subscribe{ updateEnable(it) }
     }
 
@@ -76,14 +77,6 @@ class MoreDetailsView():Activity() {
         }
     }
 
-    private fun updateLastFMLogo() {
-        Picasso.get().load(LASTFM_IMAGE).into(lastFMImageView)
-    }
-
-    private fun updateArticleText() {
-        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
-    }
-
     private fun updateOpenUrlButton() {
         openUrlButton.setOnClickListener {
             triggerWebBrowsingActivity()
@@ -97,6 +90,16 @@ class MoreDetailsView():Activity() {
             startActivity(intent)
         }
     }
+
+    private fun updateLastFMLogo() {
+        Picasso.get().load(LASTFM_IMAGE).into(lastFMImageView)
+    }
+
+    private fun updateArticleText() {
+        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
+    }
+
+
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"

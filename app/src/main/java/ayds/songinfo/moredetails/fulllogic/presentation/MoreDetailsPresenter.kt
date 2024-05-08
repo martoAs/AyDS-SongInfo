@@ -26,8 +26,8 @@ class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository):
     private fun getArticleFromRepository(artistName: String?){
         artistName?.let{
             when(val article = repository.getArticleByArtistName(artistName)){
-                is ArtistArticle -> { notifyArticle(article) }
-                is EmptyArticle -> { notifyEmptyArticle() }
+                is ArtistArticle -> {notifyArticle(article)}
+                is EmptyArticle -> {notifyEmptyArticle()}
             }
         }?: notifyEmptyArticle()
     }
@@ -43,5 +43,6 @@ class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository):
         artistBiographyObservable.notify("No results")
         actionsEnabled.notify(false)
     }
+
 
 }
