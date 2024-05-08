@@ -9,12 +9,14 @@ import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepository
 interface MoreDetailsPresenter{
     val artistBiographyObservable: Observable<String>
     val articleUrlObservable: Observable<String>
+    val actionsEnabled: Observable<Boolean>
     fun notifyOpenArticle(artistName: String?)
 }
 
 class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository): MoreDetailsPresenter{
     override val articleUrlObservable = Subject<String>()
     override val artistBiographyObservable = Subject<String>()
+    override val actionsEnabled = Subject<Boolean>()
     override fun notifyOpenArticle(artistName: String?){
         Thread {
             getArticleFromRepository(artistName)
@@ -24,12 +26,22 @@ class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository):
     private fun getArticleFromRepository(artistName: String?){
         artistName?.let{
             when(val article = repository.getArticleByArtistName(artistName)){
-                is ArtistArticle -> {articleUrlObservable.notify(article.articleUrl)
-                                     artistBiographyObservable.notify(article.biography)}
-                is EmptyArticle -> {articleUrlObservable.notify("")
-                                     artistBiographyObservable.notify("No results")}
+                is ArtistArticle -> { notifyArticle(article) }
+                is EmptyArticle -> { notifyEmptyArticle() }
             }
-        }
+        }?: notifyEmptyArticle()
+    }
+
+    private fun notifyArticle(article: ArtistArticle){
+        articleUrlObservable.notify(article.articleUrl)
+        artistBiographyObservable.notify(article.biography)
+        actionsEnabled.notify(true)
+    }
+
+    private fun notifyEmptyArticle(){
+        articleUrlObservable.notify("")
+        artistBiographyObservable.notify("No results")
+        actionsEnabled.notify(false)
     }
 
 }

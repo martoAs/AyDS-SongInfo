@@ -17,13 +17,11 @@ class MoreDetailsView():Activity() {
     private lateinit var artistInfoDisplayer: TextView
     private lateinit var openUrlButton : Button
     private lateinit var lastFMImageView : ImageView
-    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "")
-   // private lateinit var injector: MoreDetailsInjector
+    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "", false)
     private lateinit var presenter: MoreDetailsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         initializeComponents()
         initializeViewProperties()
@@ -45,7 +43,8 @@ class MoreDetailsView():Activity() {
 
     private fun initializeObservables(){
         presenter.artistBiographyObservable.subscribe{ updateBiography(it) }
-        presenter.articleUrlObservable.subscribe{ updateUrl(it)}
+        presenter.articleUrlObservable.subscribe{ updateUrl(it) }
+        presenter.actionsEnabled.subscribe{ updateEnable(it) }
     }
 
     private fun updateBiography(biography: String){
@@ -57,9 +56,15 @@ class MoreDetailsView():Activity() {
         updateOpenUrlButton()
     }
 
+    private fun updateEnable(isEnabled: Boolean){
+        UIState = UIState.copy(actionsEnabled = isEnabled)
+        runOnUiThread {
+            openUrlButton.isEnabled = UIState.actionsEnabled
+        }
+    }
+
     private fun notifyPresenter(){
-        val artist = getArtist()
-        artist?.let { presenter.notifyOpenArticle(it) }
+        presenter.notifyOpenArticle(getArtist())
     }
 
     private fun getArtist() = intent.getStringExtra(ARTIST_NAME_EXTRA)
@@ -69,6 +74,14 @@ class MoreDetailsView():Activity() {
             updateLastFMLogo()
             updateArticleText()
         }
+    }
+
+    private fun updateLastFMLogo() {
+        Picasso.get().load(LASTFM_IMAGE).into(lastFMImageView)
+    }
+
+    private fun updateArticleText() {
+        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun updateOpenUrlButton() {
@@ -84,16 +97,6 @@ class MoreDetailsView():Activity() {
             startActivity(intent)
         }
     }
-
-    private fun updateLastFMLogo() {
-        Picasso.get().load(LASTFM_IMAGE).into(lastFMImageView)
-    }
-
-    private fun updateArticleText() {
-        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
-    }
-
-
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"

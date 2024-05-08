@@ -6,8 +6,8 @@ import ayds.songinfo.moredetails.fulllogic.data.ArticleDatabase
 import ayds.songinfo.moredetails.fulllogic.data.ArticleLocalStorage
 import ayds.songinfo.moredetails.fulllogic.data.ArticleLocalStorageImpl
 import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackService
+import ayds.songinfo.moredetails.fulllogic.data.ArtistArticleRepositoryImpl
 import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepository
-import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepositoryImpl
 import ayds.songinfo.moredetails.fulllogic.presentation.MoreDetailsView
 
 object ArtistArticleRepositoryInjector {
