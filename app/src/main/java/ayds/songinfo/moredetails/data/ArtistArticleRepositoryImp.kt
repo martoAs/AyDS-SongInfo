@@ -1,10 +1,12 @@
-package ayds.songinfo.moredetails.fulllogic.data
+package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.fulllogic.domain.Article
-import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepository
+import ayds.songinfo.moredetails.data.external.ArticleTrackService
+import ayds.songinfo.moredetails.data.local.ArticleLocalStorage
+import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 
-class ArtistArticleRepositoryImp(private val articleLocalStorage: ArticleLocalStorage,
-                                 private val articleTrackService: ArticleTrackService
+internal class ArtistArticleRepositoryImp(private val articleLocalStorage: ArticleLocalStorage,
+                                          private val articleTrackService: ArticleTrackService
 ) : ArtistArticleRepository {
     override fun getArticleByArtistName(artistName: String?): Article {
         artistName?.let {

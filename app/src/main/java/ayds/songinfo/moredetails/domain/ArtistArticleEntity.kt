@@ -1,4 +1,4 @@
-package ayds.songinfo.moredetails.fulllogic.domain
+package ayds.songinfo.moredetails.domain
 
 sealed class Article{
     data class ArtistArticle(

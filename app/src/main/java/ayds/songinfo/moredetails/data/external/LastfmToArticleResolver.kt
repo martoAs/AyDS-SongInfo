@@ -1,5 +1,5 @@
-package ayds.songinfo.moredetails.fulllogic.data
-import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
+package ayds.songinfo.moredetails.data.external
+import ayds.songinfo.moredetails.domain.Article.ArtistArticle
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -15,7 +15,7 @@ private const val BIO = "bio"
 private const val ARTIST = "artist"
 private const val NO_RESULTS = "No Results"
 
-internal class LastfmToArticleResolverImpl:LastfmToArticleResolver{
+internal class LastfmToArticleResolverImpl: LastfmToArticleResolver {
     override fun getArticleFromExternalData(
         serviceData: String?,
         artistName: String

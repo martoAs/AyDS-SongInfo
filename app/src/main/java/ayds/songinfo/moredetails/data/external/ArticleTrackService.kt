@@ -1,5 +1,5 @@
-package ayds.songinfo.moredetails.fulllogic.data
-import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
+package ayds.songinfo.moredetails.data.external
+import ayds.songinfo.moredetails.domain.Article.ArtistArticle
 
 interface ArticleTrackService {
     fun getArticle(artistName: String): ArtistArticle?
@@ -8,7 +8,7 @@ interface ArticleTrackService {
 internal class ArticleTrackServiceImpl(
     private val lastFMAPI: LastFMAPI,
     private val lastfmToArticleResolver: LastfmToArticleResolver
-    ):ArticleTrackService{
+    ): ArticleTrackService {
     override fun getArticle(artistName: String): ArtistArticle? {
         val callResponse = getArticleFromService(artistName)
         return lastfmToArticleResolver.getArticleFromExternalData(callResponse.body(), artistName)

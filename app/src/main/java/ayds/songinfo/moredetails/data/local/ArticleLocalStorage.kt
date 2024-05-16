@@ -1,13 +1,13 @@
-package ayds.songinfo.moredetails.fulllogic.data
+package ayds.songinfo.moredetails.data.local
 
-import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
+import ayds.songinfo.moredetails.domain.Article.ArtistArticle
 
 interface ArticleLocalStorage{
     fun insertArticle(article: ArtistArticle)
     fun getArticleByArtistName(artistName: String): ArtistArticle?
 }
 
-internal class ArticleLocalStorageImpl(dataBase: ArticleDatabase) :ArticleLocalStorage{
+internal class ArticleLocalStorageImpl(dataBase: ArticleDatabase) : ArticleLocalStorage {
     private val articleDao: ArticleDao = dataBase.ArticleDao()
     override fun insertArticle(article: ArtistArticle) {
         articleDao.insertArticle(article.toArticleEntity())

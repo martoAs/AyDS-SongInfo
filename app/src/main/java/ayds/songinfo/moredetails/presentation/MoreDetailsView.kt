@@ -1,4 +1,4 @@
-package ayds.songinfo.moredetails.fulllogic.presentation
+package ayds.songinfo.moredetails.presentation
 
 import android.app.Activity
 import android.content.Intent
@@ -9,8 +9,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import ayds.songinfo.R
-import ayds.songinfo.moredetails.fulllogic.dependency_injector.MoreDetailsInjector
-import ayds.songinfo.moredetails.fulllogic.presentation.MoreDetailsUIState.Companion.LASTFM_IMAGE
+import ayds.songinfo.moredetails.dependency_injector.MoreDetailsInjector
+import ayds.songinfo.moredetails.presentation.MoreDetailsUIState.Companion.LASTFM_IMAGE
 import com.squareup.picasso.Picasso
 
 class MoreDetailsView():Activity() {

@@ -1,10 +1,10 @@
-package ayds.songinfo.moredetails.fulllogic.presentation
+package ayds.songinfo.moredetails.presentation
 
 import ayds.observer.Observable
 import ayds.observer.Subject
-import ayds.songinfo.moredetails.fulllogic.domain.Article.ArtistArticle
-import ayds.songinfo.moredetails.fulllogic.domain.Article.EmptyArticle
-import ayds.songinfo.moredetails.fulllogic.domain.ArtistArticleRepository
+import ayds.songinfo.moredetails.domain.Article.ArtistArticle
+import ayds.songinfo.moredetails.domain.Article.EmptyArticle
+import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 
 interface MoreDetailsPresenter{
     val artistBiographyObservable: Observable<String>
@@ -13,7 +13,8 @@ interface MoreDetailsPresenter{
     fun notifyOpenArticle(artistName: String?)
 }
 
-class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository): MoreDetailsPresenter{
+class MoreDetailsPresenterImpl(private val repository: ArtistArticleRepository):
+    MoreDetailsPresenter {
     override val articleUrlObservable = Subject<String>()
     override val artistBiographyObservable = Subject<String>()
     override val actionsEnabled = Subject<Boolean>()

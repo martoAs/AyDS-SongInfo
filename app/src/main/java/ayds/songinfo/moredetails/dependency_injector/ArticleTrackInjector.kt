@@ -1,10 +1,10 @@
-package ayds.songinfo.moredetails.fulllogic.dependency_injector
+package ayds.songinfo.moredetails.dependency_injector
 
-import ayds.songinfo.moredetails.fulllogic.data.LastFMAPI
-import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackService
-import ayds.songinfo.moredetails.fulllogic.data.ArticleTrackServiceImpl
-import ayds.songinfo.moredetails.fulllogic.data.LastfmToArticleResolver
-import ayds.songinfo.moredetails.fulllogic.data.LastfmToArticleResolverImpl
+import ayds.songinfo.moredetails.data.external.LastFMAPI
+import ayds.songinfo.moredetails.data.external.ArticleTrackService
+import ayds.songinfo.moredetails.data.external.ArticleTrackServiceImpl
+import ayds.songinfo.moredetails.data.external.LastfmToArticleResolver
+import ayds.songinfo.moredetails.data.external.LastfmToArticleResolverImpl
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
