@@ -8,26 +8,20 @@ import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 internal class ArtistArticleRepositoryImp(private val articleLocalStorage: ArticleLocalStorage,
                                           private val articleTrackService: ArticleTrackService
 ) : ArtistArticleRepository {
-    override fun getArticleByArtistName(artistName: String?): Article {
-        artistName?.let {
+    override fun getArticleByArtistName(artistName: String): Article {
 
-            var artistArticle = articleLocalStorage.getArticleByArtistName(artistName)
+        var artistArticle = articleLocalStorage.getArticleByArtistName(artistName)
 
-            if (artistArticle != null){
-                artistArticle = artistArticle.markItAsLocal()
-            } else {
-                artistArticle = articleTrackService.getArticle(artistName)
+        if (artistArticle != null){
+            artistArticle = artistArticle.markItAsLocal()
+        } else {
+            artistArticle = articleTrackService.getArticle(artistName)
 
-                artistArticle?.let{
-                    artistArticle.biography.isNotEmpty().let { articleLocalStorage.insertArticle(artistArticle) }
-                }
-            }
-            return artistArticle ?: Article.EmptyArticle
-
-        }?:let{ return Article.EmptyArticle }
+            artistArticle.biography.isNotEmpty().let { articleLocalStorage.insertArticle(artistArticle) }
+        }
+        return artistArticle
     }
 
-    private fun Article.ArtistArticle.markItAsLocal() = copy(biography = "[*]$biography")
-
+    private fun Article.markItAsLocal() = copy(biography = "[*]$biography")
 
 }

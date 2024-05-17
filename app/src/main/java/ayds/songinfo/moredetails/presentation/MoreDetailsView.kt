@@ -10,15 +10,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import ayds.songinfo.R
 import ayds.songinfo.moredetails.dependency_injector.MoreDetailsInjector
-import ayds.songinfo.moredetails.presentation.MoreDetailsUIState.Companion.LASTFM_IMAGE
 import com.squareup.picasso.Picasso
 
 class MoreDetailsView():Activity() {
     private lateinit var artistInfoDisplayer: TextView
     private lateinit var openUrlButton : Button
     private lateinit var lastFMImageView : ImageView
-    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "",false)
     private lateinit var presenter: MoreDetailsPresenter
+
+    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "","",false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,38 +43,22 @@ class MoreDetailsView():Activity() {
     }
 
     private fun initializeObservables(){
-        presenter.artistBiographyObservable.subscribe{ updateBiography(it) }
-        presenter.articleUrlObservable.subscribe{ updateUrl(it)}
-        presenter.actionsEnabled.subscribe{ updateEnable(it) }
+        presenter.articleObservable.subscribe{ updateUI(it) }
     }
 
-    private fun updateBiography(biography: String){
-        UIState = UIState.copy(articleBiography = biography)
-        updateUserInterface()
+    private fun updateUI(uiState: MoreDetailsUIState){
+        runOnUiThread {
+            updateUrl(uiState.articleURL)
+            updateLastFMLogo(uiState.imageUrl)
+            updateBiography(uiState.articleBiography)
+            updateArticleText()
+            updateEnable(uiState.actionsEnabled)
+        }
     }
+
     private fun updateUrl(urlString: String){
         UIState = UIState.copy(articleURL = urlString)
         updateOpenUrlButton()
-    }
-
-    private fun updateEnable(isEnabled: Boolean){
-        UIState = UIState.copy(actionsEnabled = isEnabled)
-        runOnUiThread {
-            openUrlButton.isEnabled = UIState.actionsEnabled
-        }
-    }
-
-    private fun notifyPresenter(){
-        presenter.notifyOpenArticle(getArtist())
-    }
-
-    private fun getArtist() = intent.getStringExtra(ARTIST_NAME_EXTRA)
-
-    private fun updateUserInterface() {
-        runOnUiThread {
-            updateLastFMLogo()
-            updateArticleText()
-        }
     }
 
     private fun updateOpenUrlButton() {
@@ -91,15 +75,32 @@ class MoreDetailsView():Activity() {
         }
     }
 
-    private fun updateLastFMLogo() {
-        Picasso.get().load(LASTFM_IMAGE).into(lastFMImageView)
+    private fun updateLastFMLogo(url:String) {
+        Picasso.get().load(url).into(lastFMImageView)
+    }
+
+    private fun updateBiography(biography: String){
+        UIState = UIState.copy(articleBiography = biography)
     }
 
     private fun updateArticleText() {
         artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
     }
 
+    private fun updateEnable(isEnabled: Boolean){
+        UIState = UIState.copy(actionsEnabled = isEnabled)
+        runOnUiThread {
+            openUrlButton.isEnabled = UIState.actionsEnabled
+        }
+    }
 
+    private fun notifyPresenter(){
+        Thread{
+            presenter.notifyOpenArticle(getArtist())
+        }.start()
+    }
+
+    private fun getArtist() = intent.getStringExtra(ARTIST_NAME_EXTRA) ?: throw Exception("Missing artist name")
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"

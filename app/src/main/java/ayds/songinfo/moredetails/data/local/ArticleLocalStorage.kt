@@ -1,29 +1,29 @@
 package ayds.songinfo.moredetails.data.local
 
-import ayds.songinfo.moredetails.domain.Article.ArtistArticle
+import ayds.songinfo.moredetails.domain.Article
 
 interface ArticleLocalStorage{
-    fun insertArticle(article: ArtistArticle)
-    fun getArticleByArtistName(artistName: String): ArtistArticle?
+    fun insertArticle(article: Article)
+    fun getArticleByArtistName(artistName: String): Article?
 }
 
 internal class ArticleLocalStorageImpl(dataBase: ArticleDatabase) : ArticleLocalStorage {
     private val articleDao: ArticleDao = dataBase.ArticleDao()
-    override fun insertArticle(article: ArtistArticle) {
+    override fun insertArticle(article: Article) {
         articleDao.insertArticle(article.toArticleEntity())
     }
 
-    override fun getArticleByArtistName(artistName: String): ArtistArticle? {
-        return articleDao.getArticleByArtistName(artistName)?.toArtistArticle()
+    override fun getArticleByArtistName(artistName: String): Article? {
+        return articleDao.getArticleByArtistName(artistName)?.toArticle()
     }
 
-    private fun ArtistArticle.toArticleEntity() = ArticleEntity(
+    private fun Article.toArticleEntity() = ArticleEntity(
         this.artistName,
         this.biography,
         this.articleUrl
     )
 
-    private fun ArticleEntity.toArtistArticle() = ArtistArticle(
+    private fun ArticleEntity.toArticle() = Article(
         this.artistName,
         this.biography,
         this.articleUrl
