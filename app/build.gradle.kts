@@ -31,6 +31,11 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    sourceSets {
+        getByName("test").java.srcDirs("src/test/java")
+        getByName("androidTest").java.srcDirs("src/androidTest/java")
+    }
 }
 
 dependencies {
@@ -44,10 +49,14 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.picasso)
     implementation(libs.androidx.room)
+    implementation("junit:junit:4.12")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.3")
+
 
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
