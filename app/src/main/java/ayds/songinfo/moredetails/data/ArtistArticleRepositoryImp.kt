@@ -17,7 +17,9 @@ internal class ArtistArticleRepositoryImp(private val articleLocalStorage: Artic
         } else {
             artistArticle = articleTrackService.getArticle(artistName)
 
-            artistArticle.biography.isNotEmpty().let { articleLocalStorage.insertArticle(artistArticle) }
+            if (artistArticle.biography.isNotEmpty()) {
+                articleLocalStorage.insertArticle(artistArticle)
+            }
         }
         return artistArticle
     }

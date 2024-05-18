@@ -6,6 +6,7 @@ import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Test
 import org.junit.Assert.assertEquals
 
@@ -38,7 +39,22 @@ class ArtistArticleRepositoryImpTest {
         val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
 
         assertEquals(article, resultArticle)
+        verify { articleLocalStorage.insertArticle(article) }
 
+
+    }
+
+    @Test
+    fun articleIsNotInLocalStorageAndBiographyIsEmpty() {
+        val artist = "artistName"
+        val article = Article(artist, "", "infoUrl")
+        every { articleLocalStorage.getArticleByArtistName(artist) } returns null
+        every { articleTrackService.getArticle(artist) } returns article
+
+        val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
+
+        assertEquals(article, resultArticle)
+        verify(exactly = 0){ articleLocalStorage.insertArticle(article) }
 
     }
 }
