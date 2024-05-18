@@ -1,18 +1,19 @@
 package ayds.songinfo.moredetails.data
 
-import org.junit.jupiter.api.Assertions.*
 import ayds.songinfo.moredetails.data.external.ArticleTrackService
 import ayds.songinfo.moredetails.data.local.ArticleLocalStorage
 import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Test
+import org.junit.Test
+import org.junit.Assert.assertEquals
 
 
 class ArtistArticleRepositoryImpTest {
     private val articleLocalStorage: ArticleLocalStorage = mockk(relaxUnitFun = true)
     private val articleTrackService: ArticleTrackService = mockk(relaxUnitFun = true)
-    private val artistArticleRepository =
+    private val artistArticleRepository: ArtistArticleRepository =
         ArtistArticleRepositoryImp(articleLocalStorage, articleTrackService)
 
     @Test
