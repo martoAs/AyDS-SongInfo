@@ -20,7 +20,7 @@ class ArtistArticleRepositoryImpTest {
     @Test
     fun `given local article should return it marked as local`() {
         val artist = "artistName"
-        var article = Article(artist, "biography", "infoUrl")
+        val article = Article(artist, "biography", "infoUrl")
         every { articleLocalStorage.getArticleByArtistName(artist) } returns article
 
         val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
