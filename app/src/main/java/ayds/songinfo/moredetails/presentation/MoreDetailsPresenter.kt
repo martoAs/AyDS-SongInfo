@@ -25,7 +25,7 @@ internal class MoreDetailsPresenterImpl(
         artistName,
         articleBiographyHelper.getDescription(this),
         articleUrl,
-        true
+        articleUrl!=""
     )
 
 }

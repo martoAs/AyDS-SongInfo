@@ -4,7 +4,7 @@ import ayds.songinfo.moredetails.domain.Article
 import java.util.Locale
 
 interface ArticleBiographyHelper {
-    fun getDescription(artistBiography: Article): String
+    fun getDescription(article: Article): String
 }
 
 private const val HEADER = "<html><div width=400><font face=\"arial\">"
@@ -12,9 +12,9 @@ private const val FOOTER = "</font></div></html>"
 
 internal class ArticleBiographyHelperImpl : ArticleBiographyHelper {
 
-    override fun getDescription(artistBiography: Article): String {
-        val text = getTextBiography(artistBiography)
-        return textToHtml(text, artistBiography.artistName)
+    override fun getDescription(article: Article): String {
+        val text = getTextBiography(article)
+        return textToHtml(text, article.artistName)
     }
 
  /*   private fun getTextBiography(artistBiography: Article): String {
@@ -23,7 +23,7 @@ internal class ArticleBiographyHelperImpl : ArticleBiographyHelper {
         return "$prefix$text"
     } */
 
-    private fun getTextBiography(artistBiography: Article) = artistBiography.biography.replace("\\n", "\n")
+    private fun getTextBiography(article: Article) = article.biography.replace("\\n", "\n")
 
     private fun textToHtml(text: String, term: String): String {
         val builder = StringBuilder()
