@@ -40,12 +40,13 @@ class ArticleBiographyHelperImplTest {
     @Test
     fun `get description, biography con caracteres especiales`(){
         val articleText = "Hello, this is a description of the Red Hot Chilli Peppers. They're the best.\n " +
-                "Psychic spies from China try to steal your mind's elation. \\n Special characters: @#\$%^&*()_+ñ¿?"
+                "Psychic spies from China try to steal your mind's elation. \\n Special characters: @#\$%^&*()_+ñÑ¿?áéíóúÁÉÍÓÚ"
         val article = Article("Red Hot Chilli Peppers", articleText, "infoUrl")
         val expectedDescription = "${header}${articleText.replace("\\n", "\n").replace("\n", "<br>").replace(article.artistName, "<b>${article.artistName.uppercase(Locale.getDefault())}</b>").replace("'", " ")}${footer}"
 
         val resultDescription = articleBiographyHelper.getDescription(article)
 
+        println(resultDescription)
         assertEquals(expectedDescription, resultDescription)
     }
 
