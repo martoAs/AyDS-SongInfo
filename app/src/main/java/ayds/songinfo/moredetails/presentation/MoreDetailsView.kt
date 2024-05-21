@@ -18,7 +18,7 @@ class MoreDetailsView():Activity() {
     private lateinit var lastFMImageView : ImageView
     private lateinit var presenter: MoreDetailsPresenter
 
-    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "","",false)
+    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
