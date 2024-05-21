@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.presentation
 
-import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -14,11 +14,11 @@ class MoreDetailsPresenterImplTest(){
 
     @Test
     fun `notify open article (with url) should notify the result`(){
-        val article = Article("artistName", "biography", "infoUrl")
+        val card = Card("artistName", "biography", "infoUrl")
         val expectedUIState = MoreDetailsUIState("artistName", "biography", "infoUrl", true)
 
-        every { repository.getArticleByArtistName("artistName") } returns article
-        every { articleBiographyHelper.getDescription(article) } returns "biography"
+        every { repository.getArticleByArtistName("artistName") } returns card
+        every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed = true)
 
@@ -31,11 +31,11 @@ class MoreDetailsPresenterImplTest(){
 
     @Test
     fun `notify open article (without url) should notify the result`(){
-        val article = Article("artistName", "biography", "")
+        val card = Card("artistName", "biography", "")
         val expectedUIState = MoreDetailsUIState("artistName", "biography", "", false)
 
-        every { repository.getArticleByArtistName("artistName") } returns article
-        every { articleBiographyHelper.getDescription(article) } returns "biography"
+        every { repository.getArticleByArtistName("artistName") } returns card
+        every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed = true)
 

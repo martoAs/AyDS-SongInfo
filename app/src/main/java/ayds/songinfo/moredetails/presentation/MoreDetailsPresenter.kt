@@ -2,7 +2,7 @@ package ayds.songinfo.moredetails.presentation
 
 import ayds.observer.Observable
 import ayds.observer.Subject
-import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 
 interface MoreDetailsPresenter {
@@ -22,11 +22,12 @@ internal class MoreDetailsPresenterImpl(
         articleObservable.notify(article.toUIState())
     }
 
-    private fun Article.toUIState() = MoreDetailsUIState(
+    private fun Card.toUIState() = MoreDetailsUIState(
         artistName,
         articleBiographyHelper.getDescription(this),
-        articleUrl,
-        articleUrl != ""
+        infoUrl,
+        infoUrl != "",
+        sourceLogoUrl
     )
 
 }

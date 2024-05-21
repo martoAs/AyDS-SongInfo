@@ -2,7 +2,7 @@ package ayds.songinfo.moredetails.data
 
 import ayds.artist.external.lastfm.ArticleTrackService
 import ayds.songinfo.moredetails.data.local.ArticleLocalStorage
-import ayds.songinfo.moredetails.domain.Article
+import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -11,7 +11,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class ArtistArticleRepositoryImpTest {
+class ArtistCardRepositoryImpTest {
     private val articleLocalStorage: ArticleLocalStorage = mockk(relaxUnitFun = true)
     private val articleTrackService: ayds.artist.external.lastfm.ArticleTrackService = mockk(relaxUnitFun = true)
     private val artistArticleRepository: ArtistArticleRepository =
@@ -20,40 +20,40 @@ class ArtistArticleRepositoryImpTest {
     @Test
     fun `given local article should return it marked as local`() {
         val artist = "artistName"
-        val article = Article(artist, "biography", "infoUrl")
-        every { articleLocalStorage.getArticleByArtistName(artist) } returns article
+        val card = Card(artist, "biography", "infoUrl")
+        every { articleLocalStorage.getArticleByArtistName(artist) } returns card
 
         val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
         val changedBiography = "[*]biography"
 
-        assertEquals(article.artistName, resultArticle.artistName)
-        assertEquals(changedBiography, resultArticle.biography)
-        assertEquals(article.articleUrl, resultArticle.articleUrl)
+        assertEquals(card.artistName, resultArticle.artistName)
+        assertEquals(changedBiography, resultArticle.description)
+        assertEquals(card.infoUrl, resultArticle.infoUrl)
     }
 
     @Test
     fun `given non local article should return article (with biography) from external service and store it locally`() {
         val artist = "artistName"
-        val article = Article(artist, "biography", "infoUrl")
+        val card = Card(artist, "biography", "infoUrl")
         every { articleLocalStorage.getArticleByArtistName(artist) } returns null
-        every { articleTrackService.getArticle(artist) } returns article
+        every { articleTrackService.getArticle(artist) } returns card
 
         val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
 
-        assertEquals(article, resultArticle)
-        verify { articleLocalStorage.insertArticle(article) }
+        assertEquals(card, resultArticle)
+        verify { articleLocalStorage.insertArticle(card) }
     }
 
     @Test
     fun `given non local article should return article (without biography) from external service`() {
         val artist = "artistName"
-        val article = Article(artist, "", "infoUrl")
+        val card = Card(artist, "", "infoUrl")
         every { articleLocalStorage.getArticleByArtistName(artist) } returns null
-        every { articleTrackService.getArticle(artist) } returns article
+        every { articleTrackService.getArticle(artist) } returns card
 
         val resultArticle = artistArticleRepository.getArticleByArtistName(artist)
 
-        assertEquals(article, resultArticle)
-        verify(exactly = 0){ articleLocalStorage.insertArticle(article) }
+        assertEquals(card, resultArticle)
+        verify(exactly = 0){ articleLocalStorage.insertArticle(card) }
     }
 }
