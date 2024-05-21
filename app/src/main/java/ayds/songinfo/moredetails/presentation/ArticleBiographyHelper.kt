@@ -17,13 +17,12 @@ internal class ArticleBiographyHelperImpl : ArticleBiographyHelper {
         return textToHtml(text, article.artistName)
     }
 
- /*   private fun getTextBiography(artistBiography: Article): String {
+    private fun getTextBiography(artistBiography: Article): String {
         val prefix = if (artistBiography.isLocallyStored) "[*]" else ""
         val text = artistBiography.biography.replace("\\n", "\n")
         return "$prefix$text"
-    } */
+    }
 
-    private fun getTextBiography(article: Article) = article.biography.replace("\\n", "\n")
 
     private fun textToHtml(text: String, term: String): String {
         val builder = StringBuilder()

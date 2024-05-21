@@ -1,6 +1,8 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.external.ArticleTrackService
+
+import ayds.artist.external.lastfm.data.ArticleTrackService
+import ayds.artist.external.lastfm.data.LastFMArticle
 import ayds.songinfo.moredetails.data.local.ArticleLocalStorage
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
@@ -13,9 +15,11 @@ internal class ArtistArticleRepositoryImp(private val articleLocalStorage: Artic
         var artistArticle = articleLocalStorage.getArticleByArtistName(artistName)
 
         if (artistArticle != null){
-            artistArticle = artistArticle.markItAsLocal()
+            artistArticle = artistArticle.apply { markItAsLocal() }
         } else {
-            artistArticle = articleTrackService.getArticle(artistName)
+
+            val lastFMArticle = articleTrackService.getArticle(artistName)
+            artistArticle = convertLastFMArticleToArticle(lastFMArticle)
 
             if (artistArticle.biography.isNotEmpty()) {
                 articleLocalStorage.insertArticle(artistArticle)
@@ -24,6 +28,11 @@ internal class ArtistArticleRepositoryImp(private val articleLocalStorage: Artic
         return artistArticle
     }
 
-    private fun Article.markItAsLocal() = copy(biography = "[*]$biography")
+    private fun convertLastFMArticleToArticle(lastFMArticle: LastFMArticle): Article {
+        return Article(lastFMArticle.artistName, lastFMArticle.biography, lastFMArticle.articleUrl)
+    }
+    private fun Article.markItAsLocal() {
+        isLocallyStored = true
+    }
 
 }

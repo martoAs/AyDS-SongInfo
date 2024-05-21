@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.external.ArticleTrackService
+import ayds.artist.external.lastfm.ArticleTrackService
 import ayds.songinfo.moredetails.data.local.ArticleLocalStorage
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
@@ -13,7 +13,7 @@ import org.junit.Test
 
 class ArtistArticleRepositoryImpTest {
     private val articleLocalStorage: ArticleLocalStorage = mockk(relaxUnitFun = true)
-    private val articleTrackService: ArticleTrackService = mockk(relaxUnitFun = true)
+    private val articleTrackService: ayds.artist.external.lastfm.ArticleTrackService = mockk(relaxUnitFun = true)
     private val artistArticleRepository: ArtistArticleRepository =
         ArtistArticleRepositoryImp(articleLocalStorage, articleTrackService)
 
