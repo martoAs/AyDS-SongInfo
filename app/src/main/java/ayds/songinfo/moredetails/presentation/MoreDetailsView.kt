@@ -23,7 +23,6 @@ class MoreDetailsView():Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         initializeComponents()
         initializeViewProperties()
         initializeObservables()

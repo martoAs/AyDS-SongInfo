@@ -5,18 +5,19 @@ import ayds.observer.Subject
 import ayds.songinfo.moredetails.domain.Article
 import ayds.songinfo.moredetails.domain.ArtistArticleRepository
 
-interface MoreDetailsPresenter{
+interface MoreDetailsPresenter {
     val articleObservable: Observable<MoreDetailsUIState>
     fun notifyOpenArticle(artistName: String)
 }
 
 internal class MoreDetailsPresenterImpl(
     private val repository: ArtistArticleRepository,
-    private val articleBiographyHelper: ArticleBiographyHelper):
+    private val articleBiographyHelper: ArticleBiographyHelper
+) :
     MoreDetailsPresenter {
 
     override val articleObservable = Subject<MoreDetailsUIState>()
-    override fun notifyOpenArticle(artistName: String){
+    override fun notifyOpenArticle(artistName: String) {
         val article = repository.getArticleByArtistName(artistName)
         articleObservable.notify(article.toUIState())
     }
@@ -25,7 +26,7 @@ internal class MoreDetailsPresenterImpl(
         artistName,
         articleBiographyHelper.getDescription(this),
         articleUrl,
-        articleUrl!=""
+        articleUrl != ""
     )
 
 }
