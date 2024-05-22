@@ -17,8 +17,9 @@ class MoreDetailsView():Activity() {
     private lateinit var openUrlButton : Button
     private lateinit var lastFMImageView : ImageView
     private lateinit var presenter: MoreDetailsPresenter
+    private lateinit var sourceLabels: List<TextView>
 
-    private var UIState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"")
+    private var uiState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +35,19 @@ class MoreDetailsView():Activity() {
         presenter = MoreDetailsInjector.getMoreDetailsPresenter()
     }
 
+    private fun makeLabelList() {
+        val lastFMSource = findViewById<TextView>(R.id.lastFMSource)
+        val wikipediaSource = findViewById<TextView>(R.id.wikipediaSource)
+        val newYorkTimesSource = findViewById<TextView>(R.id.newYorkTimesSource)
+        sourceLabels = listOf(lastFMSource, wikipediaSource, newYorkTimesSource)
+    }
+
     private fun initializeViewProperties() {
         setContentView(R.layout.activity_other_info)
         artistInfoDisplayer = findViewById(R.id.textPane1)
         openUrlButton = findViewById(R.id.openUrlButton)
         lastFMImageView = findViewById(R.id.lastFMImageView)
+        makeLabelList()
     }
 
     private fun initializeObservables(){
@@ -56,7 +65,7 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateUrl(urlString: String){
-        UIState = UIState.copy(articleURL = urlString)
+        uiState = uiState.copy(articleURL = urlString)
         updateOpenUrlButton()
     }
 
@@ -68,8 +77,8 @@ class MoreDetailsView():Activity() {
 
     private fun triggerWebBrowsingActivity() {
         val intent = Intent(Intent.ACTION_VIEW)
-        if(UIState.articleURL!=""){
-            intent.setData(Uri.parse(UIState.articleURL))
+        if(uiState.articleURL!=""){
+            intent.setData(Uri.parse(uiState.articleURL))
             startActivity(intent)
         }
     }
@@ -79,17 +88,17 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateBiography(biography: String){
-        UIState = UIState.copy(articleBiography = biography)
+        uiState = uiState.copy(articleBiography = biography)
     }
 
     private fun updateArticleText() {
-        artistInfoDisplayer.text = Html.fromHtml(UIState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
+        artistInfoDisplayer.text = Html.fromHtml(uiState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun updateEnable(isEnabled: Boolean){
-        UIState = UIState.copy(actionsEnabled = isEnabled)
+        uiState = uiState.copy(actionsEnabled = isEnabled)
         runOnUiThread {
-            openUrlButton.isEnabled = UIState.actionsEnabled
+            openUrlButton.isEnabled = uiState.actionsEnabled
         }
     }
 
