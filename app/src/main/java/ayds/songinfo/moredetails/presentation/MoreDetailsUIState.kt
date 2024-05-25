@@ -5,6 +5,7 @@ data class MoreDetailsUIState(
     val articleBiography: String,
     val articleURL: String,
     val actionsEnabled: Boolean,
-    val imageUrl: String
+    val imageUrl: String,
+    val source: String
 
 )

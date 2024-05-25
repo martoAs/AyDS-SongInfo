@@ -19,7 +19,7 @@ class MoreDetailsView():Activity() {
     private lateinit var presenter: MoreDetailsPresenter
     private lateinit var sourceLabels: List<TextView>
 
-    private var uiState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"")
+    private var uiState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"","")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +36,9 @@ class MoreDetailsView():Activity() {
     }
 
     private fun makeLabelList() {
-        val lastFMSource = findViewById<TextView>(R.id.lastFMSource)
-        val wikipediaSource = findViewById<TextView>(R.id.wikipediaSource)
-        val newYorkTimesSource = findViewById<TextView>(R.id.newYorkTimesSource)
+        val lastFMSource = findViewById<TextView>(R.id.source1)
+        val wikipediaSource = findViewById<TextView>(R.id.source2)
+        val newYorkTimesSource = findViewById<TextView>(R.id.source3)
         sourceLabels = listOf(lastFMSource, wikipediaSource, newYorkTimesSource)
     }
 
@@ -61,7 +61,14 @@ class MoreDetailsView():Activity() {
             updateBiography(uiState.articleBiography)
             updateArticleText()
             updateEnable(uiState.actionsEnabled)
+            updateSourceLabel(uiState.source)
         }
+    }
+
+    private fun updateSourceLabel(source: String) {
+        sourceLabels.first().text = source
+        sourceLabels.first().visibility = TextView.VISIBLE
+
     }
 
     private fun updateUrl(urlString: String){

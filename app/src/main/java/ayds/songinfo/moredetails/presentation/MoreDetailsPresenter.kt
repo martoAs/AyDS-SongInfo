@@ -27,7 +27,9 @@ internal class MoreDetailsPresenterImpl(
         articleBiographyHelper.getDescription(this),
         infoUrl,
         infoUrl != "",
-        sourceLogoUrl
+        sourceLogoUrl,
+        source.name
+
     )
 
 }

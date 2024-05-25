@@ -29,7 +29,7 @@
                 android:paddingTop="24dp" />
 
             <TextView
-                android:id="@+id/lastFMSource"
+                android:id="@+id/source1"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
                 android:visibility="invisible" />
@@ -57,7 +57,7 @@
                 android:paddingTop="24dp" />
 
             <TextView
-                android:id="@+id/wikipediaSource"
+                android:id="@+id/source2"
                 android:layout_width="81dp"
                 android:layout_height="wrap_content"
                 android:visibility="invisible" />
@@ -86,7 +86,7 @@
                 android:paddingTop="24dp" />
 
             <TextView
-                android:id="@+id/newYorkTimesSource"
+                android:id="@+id/source3"
                 android:layout_width="77dp"
                 android:layout_height="wrap_content"
                 android:visibility="invisible" />
