@@ -1,14 +1,14 @@
 package ayds.songinfo.moredetails.presentation
 
 import ayds.songinfo.moredetails.domain.Card
-import ayds.songinfo.moredetails.domain.ArtistArticleRepository
+import ayds.songinfo.moredetails.domain.OtherInfoRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
 
 class MoreDetailsPresenterImplTest(){
-    private val repository: ArtistArticleRepository = mockk()
+    private val repository: OtherInfoRepository = mockk()
     private val articleBiographyHelper: ArticleBiographyHelper = mockk()
     private val moreDetailsPresenter: MoreDetailsPresenter = MoreDetailsPresenterImpl(repository, articleBiographyHelper)
 
@@ -17,14 +17,14 @@ class MoreDetailsPresenterImplTest(){
         val card = Card("artistName", "biography", "infoUrl")
         val expectedUIState = MoreDetailsUIState("artistName", "biography", "infoUrl", true)
 
-        every { repository.getArticleByArtistName("artistName") } returns card
+        every { repository.getCard("artistName") } returns card
         every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed = true)
 
-        moreDetailsPresenter.articleObservable.subscribe { stateTester(it) }
+        moreDetailsPresenter.cardObservable.subscribe { stateTester(it) }
 
-        moreDetailsPresenter.notifyOpenArticle("artistName")
+        moreDetailsPresenter.updateCard("artistName")
 
         verify{stateTester(expectedUIState)}
     }
@@ -34,14 +34,14 @@ class MoreDetailsPresenterImplTest(){
         val card = Card("artistName", "biography", "")
         val expectedUIState = MoreDetailsUIState("artistName", "biography", "", false)
 
-        every { repository.getArticleByArtistName("artistName") } returns card
+        every { repository.getCard("artistName") } returns card
         every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (MoreDetailsUIState) -> Unit = mockk(relaxed = true)
 
-        moreDetailsPresenter.articleObservable.subscribe { stateTester(it) }
+        moreDetailsPresenter.cardObservable.subscribe { stateTester(it) }
 
-        moreDetailsPresenter.notifyOpenArticle("artistName")
+        moreDetailsPresenter.updateCard("artistName")
 
         verify{stateTester(expectedUIState)}
     }

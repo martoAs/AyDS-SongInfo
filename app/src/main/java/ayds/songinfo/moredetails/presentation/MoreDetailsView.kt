@@ -13,9 +13,9 @@ import ayds.songinfo.moredetails.dependency_injector.MoreDetailsInjector
 import com.squareup.picasso.Picasso
 
 class MoreDetailsView():Activity() {
-    private lateinit var artistInfoDisplayer: TextView
+    private lateinit var cardContentTextView: TextView
     private lateinit var openUrlButton : Button
-    private lateinit var lastFMImageView : ImageView
+    private lateinit var sourceImage : ImageView
     private lateinit var presenter: MoreDetailsPresenter
     private lateinit var sourceLabels: List<TextView>
 
@@ -44,14 +44,14 @@ class MoreDetailsView():Activity() {
 
     private fun initializeViewProperties() {
         setContentView(R.layout.activity_other_info)
-        artistInfoDisplayer = findViewById(R.id.textPane1)
+        cardContentTextView = findViewById(R.id.cardContent1TextPane)
         openUrlButton = findViewById(R.id.openUrlButton)
-        lastFMImageView = findViewById(R.id.lastFMImageView)
+        sourceImage = findViewById(R.id.lastFMImageView)
         makeLabelList()
     }
 
     private fun initializeObservables(){
-        presenter.articleObservable.subscribe{ updateUI(it) }
+        presenter.cardObservable.subscribe{ updateUI(it) }
     }
 
     private fun updateUI(uiState: MoreDetailsUIState){
@@ -91,7 +91,7 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateLastFMLogo(url:String) {
-        Picasso.get().load(url).into(lastFMImageView)
+        Picasso.get().load(url).into(sourceImage)
     }
 
     private fun updateBiography(biography: String){
@@ -99,7 +99,7 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateArticleText() {
-        artistInfoDisplayer.text = Html.fromHtml(uiState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
+        cardContentTextView.text = Html.fromHtml(uiState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun updateEnable(isEnabled: Boolean){
@@ -111,7 +111,7 @@ class MoreDetailsView():Activity() {
 
     private fun notifyPresenter(){
         Thread{
-            presenter.notifyOpenArticle(getArtist())
+            presenter.updateCard(getArtist())
         }.start()
     }
 

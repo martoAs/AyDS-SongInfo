@@ -1,17 +1,14 @@
 package ayds.artist.external.lastfm.data
-import ayds.artist.external.lastfm.data.LastFMAPI
-import ayds.artist.external.lastfm.data.LastfmToArticleResolver
-import ayds.artist.external.lastfm.data.LastFMArticle
 import java.io.IOException
 
-interface ArticleTrackService {
+interface LastFMService {
     fun getArticle(artistName: String): LastFMArticle
 }
 
-internal class ArticleTrackServiceImpl(
+internal class LastFMServiceImpl(
     private val lastFMAPI: LastFMAPI,
     private val lastfmToArticleResolver: LastfmToArticleResolver
-    ): ArticleTrackService {
+    ): LastFMService {
     override fun getArticle(artistName: String): LastFMArticle {
         var article = LastFMArticle(artistName, "", "")
         try{
