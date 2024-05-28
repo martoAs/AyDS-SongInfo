@@ -18,9 +18,9 @@ abstract class CardDatabase : RoomDatabase() {
 data class CardEntity(
     @PrimaryKey
     val artistName: String,
-    val biography: String,
+    val content: String,
     val url: String,
-    val source: Int
+    val source: String
 )
 
 @Dao

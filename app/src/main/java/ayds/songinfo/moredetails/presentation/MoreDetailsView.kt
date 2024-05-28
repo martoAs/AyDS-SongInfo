@@ -9,7 +9,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import ayds.songinfo.R
-import ayds.songinfo.moredetails.dependency_injector.MoreDetailsInjector
+import ayds.songinfo.moredetails.injector.MoreDetailsInjector
 import com.squareup.picasso.Picasso
 
 class MoreDetailsView():Activity() {
@@ -19,7 +19,7 @@ class MoreDetailsView():Activity() {
     private lateinit var presenter: MoreDetailsPresenter
     private lateinit var sourceLabels: List<TextView>
 
-    private var uiState: MoreDetailsUIState = MoreDetailsUIState("", "","",false,"","")
+    private var uiState: CardUIState = CardUIState("", "","",false,"","")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,11 +54,11 @@ class MoreDetailsView():Activity() {
         presenter.cardObservable.subscribe{ updateUI(it) }
     }
 
-    private fun updateUI(uiState: MoreDetailsUIState){
+    private fun updateUI(uiState: CardUIState){
         runOnUiThread {
-            updateUrl(uiState.articleURL)
+            updateUrl(uiState.url)
             updateLastFMLogo(uiState.imageUrl)
-            updateBiography(uiState.articleBiography)
+            updateBiography(uiState.contentHtml)
             updateArticleText()
             updateEnable(uiState.actionsEnabled)
             updateSourceLabel(uiState.source)
@@ -72,7 +72,7 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateUrl(urlString: String){
-        uiState = uiState.copy(articleURL = urlString)
+        uiState = uiState.copy(url = urlString)
         updateOpenUrlButton()
     }
 
@@ -84,8 +84,8 @@ class MoreDetailsView():Activity() {
 
     private fun triggerWebBrowsingActivity() {
         val intent = Intent(Intent.ACTION_VIEW)
-        if(uiState.articleURL!=""){
-            intent.setData(Uri.parse(uiState.articleURL))
+        if(uiState.url!=""){
+            intent.setData(Uri.parse(uiState.url))
             startActivity(intent)
         }
     }
@@ -95,11 +95,11 @@ class MoreDetailsView():Activity() {
     }
 
     private fun updateBiography(biography: String){
-        uiState = uiState.copy(articleBiography = biography)
+        uiState = uiState.copy(contentHtml = biography)
     }
 
     private fun updateArticleText() {
-        cardContentTextView.text = Html.fromHtml(uiState.articleBiography, Html.FROM_HTML_MODE_LEGACY)
+        cardContentTextView.text = Html.fromHtml(uiState.contentHtml, Html.FROM_HTML_MODE_LEGACY)
     }
 
     private fun updateEnable(isEnabled: Boolean){

@@ -12,7 +12,7 @@ internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherIn
 ) : OtherInfoRepository {
     override fun getCard(artistName: String): Card {
 
-        var card = otherInfoLocalStorage.getArticleByArtistName(artistName)
+        var card = otherInfoLocalStorage.getCard(artistName)
 
         if (card != null){
             card = card.apply { markItAsLocal() }

@@ -1,4 +1,4 @@
-package ayds.songinfo.moredetails.dependency_injector
+package ayds.songinfo.moredetails.injector
 
 import ayds.songinfo.moredetails.presentation.ArticleBiographyHelperImpl
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenter

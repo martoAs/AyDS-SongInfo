@@ -1,4 +1,4 @@
-package ayds.songinfo.moredetails.dependency_injector
+package ayds.songinfo.moredetails.injector
 
 import android.content.Context
 import androidx.room.Room
