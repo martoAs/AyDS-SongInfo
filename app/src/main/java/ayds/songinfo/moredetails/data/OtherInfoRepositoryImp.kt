@@ -18,9 +18,6 @@ internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherIn
             card = card.apply { markItAsLocal() }
         } else {
 
-            val lastFMArticle = lastFMService.getArticle(artistName)
-            card = convertLastFMArticleToCard(lastFMArticle)
-
             if (card.description.isNotEmpty()) {
                 otherInfoLocalStorage.insertCard(card)
             }
@@ -28,9 +25,7 @@ internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherIn
         return card
     }
 
-    private fun convertLastFMArticleToCard(lastFMArticle: LastFMArticle): Card {
-        return Card(lastFMArticle.artistName, lastFMArticle.biography, lastFMArticle.articleUrl)
-    }
+
     private fun Card.markItAsLocal() {
         isLocallyStored = true
     }

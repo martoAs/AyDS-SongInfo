@@ -9,7 +9,7 @@ internal class NYTimesServiceImpl(
     private val nyTimesToArtistResolver: NYTimesToArtistResolver,
 ) : NYTimesService {
 
-    override fun getArtistInfo(artistName: String?): NYTimesArticle {
+    override fun getArtistInfo(artistName: String): NYTimesArticle {
         var infoArtist: String? = null
         try {
             infoArtist = nyTimesToArtistResolver.generateFormattedResponse(getInfoFromAPI(artistName), artistName)
@@ -26,6 +26,6 @@ internal class NYTimesServiceImpl(
         }
     }
 
-    private fun getInfoFromAPI(artistName: String?) = nyTimesAPI.getArtistInfo(artistName).execute()
+    private fun getInfoFromAPI(artistName: String) = nyTimesAPI.getArtistInfo(artistName).execute()
 
 }
