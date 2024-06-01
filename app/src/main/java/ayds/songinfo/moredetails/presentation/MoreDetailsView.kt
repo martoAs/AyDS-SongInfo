@@ -111,7 +111,7 @@ class MoreDetailsView():Activity() {
 
     private fun notifyPresenter(){
         Thread{
-            presenter.updateCard(getArtist())
+            presenter.updateCards(getArtist())
         }.start()
     }
 

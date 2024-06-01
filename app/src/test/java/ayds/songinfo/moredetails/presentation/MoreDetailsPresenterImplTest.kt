@@ -9,8 +9,8 @@ import org.junit.Test
 
 class MoreDetailsPresenterImplTest(){
     private val repository: OtherInfoRepository = mockk()
-    private val articleBiographyHelper: ArticleBiographyHelper = mockk()
-    private val moreDetailsPresenter: MoreDetailsPresenter = MoreDetailsPresenterImpl(repository, articleBiographyHelper)
+    private val cardBiographyHelper: CardBiographyHelper = mockk()
+    private val moreDetailsPresenter: MoreDetailsPresenter = MoreDetailsPresenterImpl(repository, cardBiographyHelper)
 
     @Test
     fun `notify open article (with url) should notify the result`(){
@@ -18,13 +18,13 @@ class MoreDetailsPresenterImplTest(){
         val expectedUIState = CardUIState("artistName", "biography", "infoUrl", true)
 
         every { repository.getListOfCards("artistName") } returns card
-        every { articleBiographyHelper.getDescription(card) } returns "biography"
+        every { cardBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (CardUIState) -> Unit = mockk(relaxed = true)
 
         moreDetailsPresenter.cardObservable.subscribe { stateTester(it) }
 
-        moreDetailsPresenter.updateCard("artistName")
+        moreDetailsPresenter.updateCards("artistName")
 
         verify{stateTester(expectedUIState)}
     }
@@ -35,13 +35,13 @@ class MoreDetailsPresenterImplTest(){
         val expectedUIState = CardUIState("artistName", "biography", "", false)
 
         every { repository.getListOfCards("artistName") } returns card
-        every { articleBiographyHelper.getDescription(card) } returns "biography"
+        every { cardBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (CardUIState) -> Unit = mockk(relaxed = true)
 
         moreDetailsPresenter.cardObservable.subscribe { stateTester(it) }
 
-        moreDetailsPresenter.updateCard("artistName")
+        moreDetailsPresenter.updateCards("artistName")
 
         verify{stateTester(expectedUIState)}
     }

@@ -8,7 +8,7 @@ import java.util.Locale
 
 class CardBiographyHelperImplTest {
 
-    private val articleBiographyHelper: ArticleBiographyHelper = ArticleBiographyHelperImpl()
+    private val cardBiographyHelper: CardBiographyHelper = CardBiographyHelperImpl()
     private val footer = "</font></div></html>"
     private val header = "<html><div width=400><font face=\"arial\">"
     @Test
@@ -18,7 +18,7 @@ class CardBiographyHelperImplTest {
         val card = Card("Red Hot Chilli Peppers", articleText, "infoUrl")
         val expectedDescription = "${header}Hello, this is a description of the <b>RED HOT CHILLI PEPPERS</b>. They re the best.<br> Psychic spies from China try to steal your mind s elation.${footer}"
 
-        val resultDescription = articleBiographyHelper.getDescription(card)
+        val resultDescription = cardBiographyHelper.getDescription(card)
 
         assertEquals(expectedDescription, resultDescription)
     }
@@ -32,7 +32,7 @@ class CardBiographyHelperImplTest {
         val card = Card("artist name", "", "infoUrl")
         val expectedDescription = "${header}${footer}"
 
-        val resultDescription = articleBiographyHelper.getDescription(card)
+        val resultDescription = cardBiographyHelper.getDescription(card)
 
         assertEquals(expectedDescription, resultDescription)
     }
@@ -44,7 +44,7 @@ class CardBiographyHelperImplTest {
         val card = Card("Red Hot Chilli Peppers", articleText, "infoUrl")
         val expectedDescription = "${header}${articleText.replace("\\n", "\n").replace("\n", "<br>").replace(card.artistName, "<b>${card.artistName.uppercase(Locale.getDefault())}</b>").replace("'", " ")}${footer}"
 
-        val resultDescription = articleBiographyHelper.getDescription(card)
+        val resultDescription = cardBiographyHelper.getDescription(card)
 
         println(resultDescription)
         assertEquals(expectedDescription, resultDescription)
@@ -57,7 +57,7 @@ class CardBiographyHelperImplTest {
         val artistName = "Red Hot Chilli Peppers"
         val card = Card(artistName, articleText, "infoUrl")
 
-        val resultDescription = articleBiographyHelper.getDescription(card)
+        val resultDescription = cardBiographyHelper.getDescription(card)
 
         assertTrue(!resultDescription.contains("\\n"))
         assertTrue(!resultDescription.contains("\n"))
