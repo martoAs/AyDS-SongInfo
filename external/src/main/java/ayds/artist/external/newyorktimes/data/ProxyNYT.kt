@@ -1,14 +1,15 @@
-package ayds.artist.external.broker
+package ayds.artist.external.newyorktimes.data
 
-import ayds.artist.external.newyorktimes.data.NYTimesArticle
-import ayds.artist.external.newyorktimes.data.NYTimesService
+import ayds.artist.external.ProxyInterface
+import ayds.artist.external.newyorktimes.injector.NYTimesInjector
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.CardSource
 
-internal class ProxyNYTImpl(private val NYTService: NYTimesService):ProxyInterface{
+class ProxyNYTImpl: ProxyInterface {
+    private val nyTimesService: NYTimesService = initNYTimesService()
     override fun get(artistName: String): Card {
-        val NYTimesArticle = NYTService.getArtistInfo(artistName)
-        return convertLastFMArticleToCard(NYTimesArticle)
+        val nyTimesArticle = nyTimesService.getArtistInfo(artistName)
+        return convertLastFMArticleToCard(nyTimesArticle)
     }
 
     private fun convertLastFMArticleToCard(articleNYT: NYTimesArticle): Card {
@@ -19,6 +20,10 @@ internal class ProxyNYTImpl(private val NYTService: NYTimesService):ProxyInterfa
             is NYTimesArticle.EmptyArtistDataExternal -> Card("", "","", CardSource.NYTIMES, "")
         }
         return cardToReturn
+    }
+
+    private fun initNYTimesService(): NYTimesService {
+        return NYTimesInjector.nyTimesService
     }
 
 }

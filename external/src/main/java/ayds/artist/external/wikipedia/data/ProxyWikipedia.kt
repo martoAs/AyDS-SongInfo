@@ -1,13 +1,15 @@
-package ayds.artist.external.broker
+package ayds.artist.external.wikipedia.data
 
-import ayds.artist.external.wikipedia.data.WikipediaArticle
-import ayds.artist.external.wikipedia.data.WikipediaTrackService
+import ayds.artist.external.ProxyInterface
+import ayds.artist.external.wikipedia.injector.WikipediaInjector
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.CardSource
 
-internal class ProxyWikipedia(private val wikiService: WikipediaTrackService): ProxyInterface{
+class ProxyWikipedia: ProxyInterface {
+
+    private val wikiService: WikipediaTrackService = initWikipediaService()
     override fun get(artistName: String): Card{
-        var articleWiki = wikiService.getInfo(artistName)
+        val articleWiki = wikiService.getInfo(artistName)
         return convertWikipediaArticleToCard(articleWiki)
     }
 
@@ -19,6 +21,10 @@ internal class ProxyWikipedia(private val wikiService: WikipediaTrackService): P
             is WikipediaArticle.EmptyWikipediaArticle -> Card("", "","", CardSource.WIKIPEDIA, "")
         }
         return cardToReturn
+    }
+
+    private fun initWikipediaService(): WikipediaTrackService {
+        return WikipediaInjector.wikipediaTrackService
     }
 
 }

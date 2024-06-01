@@ -17,7 +17,7 @@ class MoreDetailsPresenterImplTest(){
         val card = Card("artistName", "biography", "infoUrl")
         val expectedUIState = CardUIState("artistName", "biography", "infoUrl", true)
 
-        every { repository.getCard("artistName") } returns card
+        every { repository.getListOfCards("artistName") } returns card
         every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (CardUIState) -> Unit = mockk(relaxed = true)
@@ -34,7 +34,7 @@ class MoreDetailsPresenterImplTest(){
         val card = Card("artistName", "biography", "")
         val expectedUIState = CardUIState("artistName", "biography", "", false)
 
-        every { repository.getCard("artistName") } returns card
+        every { repository.getListOfCards("artistName") } returns card
         every { articleBiographyHelper.getDescription(card) } returns "biography"
 
         val stateTester: (CardUIState) -> Unit = mockk(relaxed = true)

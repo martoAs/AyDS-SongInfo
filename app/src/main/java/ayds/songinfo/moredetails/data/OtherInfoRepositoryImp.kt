@@ -1,16 +1,12 @@
 package ayds.songinfo.moredetails.data
 
-
-import ayds.artist.external.lastfm.data.LastFMService
-import ayds.artist.external.lastfm.data.LastFMArticle
 import ayds.songinfo.moredetails.data.local.OtherInfoLocalStorage
 import ayds.songinfo.moredetails.domain.Card
 import ayds.songinfo.moredetails.domain.OtherInfoRepository
 
-internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherInfoLocalStorage,
-                                      private val lastFMService: LastFMService
+internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherInfoLocalStorage
 ) : OtherInfoRepository {
-    override fun getCard(artistName: String): Card {
+    override fun getListOfCards(artistName: String): List<Card> {
 
         var card = otherInfoLocalStorage.getCard(artistName)
 

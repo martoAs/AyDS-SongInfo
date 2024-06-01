@@ -23,7 +23,7 @@ class ArtistCardRepositoryImpTest {
         val card = Card(artist, "biography", "infoUrl")
         every { otherInfoLocalStorage.getCard(artist) } returns card
 
-        val resultArticle = otherInfoRepository.getCard(artist)
+        val resultArticle = otherInfoRepository.getListOfCards(artist)
         val changedBiography = "[*]biography"
 
         assertEquals(card.artistName, resultArticle.artistName)
@@ -38,7 +38,7 @@ class ArtistCardRepositoryImpTest {
         every { otherInfoLocalStorage.getCard(artist) } returns null
         every { articleTrackService.getArticle(artist) } returns card
 
-        val resultArticle = otherInfoRepository.getCard(artist)
+        val resultArticle = otherInfoRepository.getListOfCards(artist)
 
         assertEquals(card, resultArticle)
         verify { otherInfoLocalStorage.insertCard(card) }
@@ -51,7 +51,7 @@ class ArtistCardRepositoryImpTest {
         every { otherInfoLocalStorage.getCard(artist) } returns null
         every { articleTrackService.getArticle(artist) } returns card
 
-        val resultArticle = otherInfoRepository.getCard(artist)
+        val resultArticle = otherInfoRepository.getListOfCards(artist)
 
         assertEquals(card, resultArticle)
         verify(exactly = 0){ otherInfoLocalStorage.insertCard(card) }

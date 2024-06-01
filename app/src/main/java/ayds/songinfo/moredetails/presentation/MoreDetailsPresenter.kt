@@ -18,7 +18,7 @@ internal class MoreDetailsPresenterImpl(
 
     override val cardObservable = Subject<CardUIState>()
     override fun updateCard(artistName: String) {
-        val article = repository.getCard(artistName)
+        val article = repository.getListOfCards(artistName)
         cardObservable.notify(article.toUIState())
     }
 

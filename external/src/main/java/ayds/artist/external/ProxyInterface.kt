@@ -1,4 +1,4 @@
-package ayds.artist.external.broker
+package ayds.artist.external
 
 import ayds.songinfo.moredetails.domain.Card
 
