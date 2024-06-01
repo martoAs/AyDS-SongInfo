@@ -7,13 +7,13 @@ import ayds.artist.external.wikipedia.data.ProxyWikipedia
 import ayds.songinfo.moredetails.domain.Card
 
 interface Broker {
-    fun getLisOfCards(artistName: String): MutableList<Card>
+    fun getListOfCards(artistName: String): MutableList<Card>
 }
 
 internal class BrokerImpl() : Broker {
 
     private val proxyList: List<ProxyInterface> = getProxys()
-    override fun getLisOfCards(artistName: String): MutableList<Card> {
+    override fun getListOfCards(artistName: String): MutableList<Card> {
         val cardList = mutableListOf<Card>()
         for (proxy in proxyList) {
             cardList.add(proxy.get(artistName))

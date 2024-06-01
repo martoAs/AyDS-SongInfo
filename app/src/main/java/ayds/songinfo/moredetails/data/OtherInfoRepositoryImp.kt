@@ -14,7 +14,7 @@ internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherIn
 
         var cards = otherInfoLocalStorage.getCards(artistName)
         if(cards.isEmpty()){
-            cards = broker.getLisOfCards(artistName)
+            cards = broker.getListOfCards(artistName)
             for (c in cards){
                 if(c.description.isNotEmpty()){
                     otherInfoLocalStorage.insertCard(c)
