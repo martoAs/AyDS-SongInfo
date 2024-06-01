@@ -36,10 +36,10 @@ class MoreDetailsView():Activity() {
     }
 
     private fun makeLabelList() {
-        val lastFMSource = findViewById<TextView>(R.id.source1)
-        val wikipediaSource = findViewById<TextView>(R.id.source2)
-        val newYorkTimesSource = findViewById<TextView>(R.id.source3)
-        sourceLabels = listOf(lastFMSource, wikipediaSource, newYorkTimesSource)
+        val firstSource = findViewById<TextView>(R.id.source1)
+        val secondSource = findViewById<TextView>(R.id.source2)
+        val thirdSource = findViewById<TextView>(R.id.source3)
+        sourceLabels = listOf(firstSource, secondSource, thirdSource)
     }
 
     private fun initializeViewProperties() {
