@@ -21,7 +21,7 @@ class ArtistCardRepositoryImpTest {
     fun `given local article should return it marked as local`() {
         val artist = "artistName"
         val card = Card(artist, "biography", "infoUrl")
-        every { otherInfoLocalStorage.getCard(artist) } returns card
+        every { otherInfoLocalStorage.getCards(artist) } returns card
 
         val resultArticle = otherInfoRepository.getListOfCards(artist)
         val changedBiography = "[*]biography"
@@ -35,7 +35,7 @@ class ArtistCardRepositoryImpTest {
     fun `given non local article should return article (with biography) from external service and store it locally`() {
         val artist = "artistName"
         val card = Card(artist, "biography", "infoUrl")
-        every { otherInfoLocalStorage.getCard(artist) } returns null
+        every { otherInfoLocalStorage.getCards(artist) } returns null
         every { articleTrackService.getArticle(artist) } returns card
 
         val resultArticle = otherInfoRepository.getListOfCards(artist)
@@ -48,7 +48,7 @@ class ArtistCardRepositoryImpTest {
     fun `given non local article should return article (without biography) from external service`() {
         val artist = "artistName"
         val card = Card(artist, "", "infoUrl")
-        every { otherInfoLocalStorage.getCard(artist) } returns null
+        every { otherInfoLocalStorage.getCards(artist) } returns null
         every { articleTrackService.getArticle(artist) } returns card
 
         val resultArticle = otherInfoRepository.getListOfCards(artist)

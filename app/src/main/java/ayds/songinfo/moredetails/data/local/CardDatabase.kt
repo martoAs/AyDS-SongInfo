@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.RoomDatabase
+import ayds.songinfo.moredetails.domain.CardSource
 
 @Database(entities = [CardEntity::class], version = 2)
 abstract class CardDatabase : RoomDatabase() {
@@ -20,7 +21,8 @@ data class CardEntity(
     val artistName: String,
     val content: String,
     val url: String,
-    val source: String
+    val source: CardSource,
+    val sourceLogoUrl: String
 )
 
 @Dao
@@ -29,7 +31,7 @@ interface CardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCard(card: CardEntity)
 
-    @Query("SELECT * FROM CardEntity WHERE artistName LIKE :artistName LIMIT 1")
-    fun getCardByArtistName(artistName: String): CardEntity?
+    @Query("SELECT * FROM CardEntity WHERE artistName LIKE :artistName")
+    fun getCardsByArtistName(artistName: String): List<CardEntity>
 
 }
