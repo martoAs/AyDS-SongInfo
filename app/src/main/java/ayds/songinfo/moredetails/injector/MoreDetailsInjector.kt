@@ -10,8 +10,8 @@ object MoreDetailsInjector {
 
     fun getMoreDetailsPresenter(): MoreDetailsPresenter = moreDetailsPresenter
     fun init(moreDetailsView: MoreDetailsView){
-        ArtistArticleRepositoryInjector.initArtistArticleRepository(moreDetailsView)
+        MoreDetailsRepositoryInjector.initMoreDetailsRepository(moreDetailsView)
         val artistBiographyHelper = CardBiographyHelperImpl()
-        moreDetailsPresenter = MoreDetailsPresenterImpl(ArtistArticleRepositoryInjector.articleRepository, artistBiographyHelper)
+        moreDetailsPresenter = MoreDetailsPresenterImpl(MoreDetailsRepositoryInjector.articleRepository, artistBiographyHelper)
     }
 }

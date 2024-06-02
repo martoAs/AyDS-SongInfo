@@ -2,12 +2,12 @@ package ayds.songinfo.moredetails.data.local
 
 import ayds.songinfo.moredetails.domain.Card
 
-interface OtherInfoLocalStorage{
+interface MoreDetailsLocalStorage{
     fun insertCard(card: Card)
     fun getCards(artistName: String): List<Card>
 }
 
-internal class OtherInfoLocalStorageImpl(dataBase: CardDatabase) : OtherInfoLocalStorage {
+internal class MoreDetailsLocalStorageImpl(dataBase: CardDatabase) : MoreDetailsLocalStorage {
     private val cardDao: CardDao = dataBase.cardDao()
     override fun insertCard(card: Card) {
         cardDao.insertCard(card.toCardEntity())

@@ -3,7 +3,7 @@ package ayds.songinfo.moredetails.presentation
 import ayds.observer.Observable
 import ayds.observer.Subject
 import ayds.songinfo.moredetails.domain.Card
-import ayds.songinfo.moredetails.domain.OtherInfoRepository
+import ayds.songinfo.moredetails.domain.MoreDetailsRepository
 
 interface MoreDetailsPresenter {
     val cardObservable: Observable<List<CardUIState>>
@@ -11,7 +11,7 @@ interface MoreDetailsPresenter {
 }
 
 internal class MoreDetailsPresenterImpl(
-    private val repository: OtherInfoRepository,
+    private val repository: MoreDetailsRepository,
     private val cardBiographyHelper: CardBiographyHelper
 ) :
     MoreDetailsPresenter {

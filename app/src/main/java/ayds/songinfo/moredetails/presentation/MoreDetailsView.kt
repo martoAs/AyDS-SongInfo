@@ -20,6 +20,7 @@ class MoreDetailsView():Activity() {
     private lateinit var sourceLabels: List<TextView>
 
     private var uiState: CardUIState = CardUIState("", "","",false,"","")
+    private var locallyStoredLogo = "https://img.icons8.com/ultraviolet/40/database.png"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +58,7 @@ class MoreDetailsView():Activity() {
     private fun updateUI(uiState: CardUIState){
         runOnUiThread {
             updateUrl(uiState.url)
-            updateLastFMLogo(uiState.imageUrl)
+            updateServiceLogo(uiState.imageUrl)
             updateBiography(uiState.contentHtml)
             updateArticleText()
             updateEnable(uiState.actionsEnabled)
@@ -90,7 +91,7 @@ class MoreDetailsView():Activity() {
         }
     }
 
-    private fun updateLastFMLogo(url:String) {
+    private fun updateServiceLogo(url:String) {
         Picasso.get().load(url).into(sourceImage)
     }
 

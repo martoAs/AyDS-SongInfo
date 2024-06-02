@@ -1,14 +1,14 @@
 package ayds.songinfo.moredetails.presentation
 
 import ayds.songinfo.moredetails.domain.Card
-import ayds.songinfo.moredetails.domain.OtherInfoRepository
+import ayds.songinfo.moredetails.domain.MoreDetailsRepository
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
 
 class MoreDetailsPresenterImplTest(){
-    private val repository: OtherInfoRepository = mockk()
+    private val repository: MoreDetailsRepository = mockk()
     private val cardBiographyHelper: CardBiographyHelper = mockk()
     private val moreDetailsPresenter: MoreDetailsPresenter = MoreDetailsPresenterImpl(repository, cardBiographyHelper)
 

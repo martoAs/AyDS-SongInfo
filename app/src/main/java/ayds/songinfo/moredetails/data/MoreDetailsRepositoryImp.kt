@@ -1,23 +1,20 @@
 package ayds.songinfo.moredetails.data
 
 import ayds.songinfo.moredetails.data.external.Broker
-import ayds.songinfo.moredetails.data.external.BrokerImpl
-import ayds.songinfo.moredetails.data.local.OtherInfoLocalStorage
+import ayds.songinfo.moredetails.data.local.MoreDetailsLocalStorage
 import ayds.songinfo.moredetails.domain.Card
-import ayds.songinfo.moredetails.domain.OtherInfoRepository
+import ayds.songinfo.moredetails.domain.MoreDetailsRepository
 
-internal class OtherInfoRepositoryImp(private val otherInfoLocalStorage: OtherInfoLocalStorage
-) : OtherInfoRepository {
-
-    private val broker: Broker = BrokerImpl()
+internal class MoreDetailsRepositoryImp(private val moreDetailsLocalStorage: MoreDetailsLocalStorage,
+                                        private val broker: Broker) : MoreDetailsRepository {
     override fun getListOfCards(artistName: String): List<Card> {
 
-        var cards = otherInfoLocalStorage.getCards(artistName)
+        var cards = moreDetailsLocalStorage.getCards(artistName)
         if(cards.isEmpty()){
             cards = broker.getListOfCards(artistName)
             for (c in cards){
                 if(c.description.isNotEmpty()){
-                    otherInfoLocalStorage.insertCard(c)
+                    moreDetailsLocalStorage.insertCard(c)
                 }
             }
         }

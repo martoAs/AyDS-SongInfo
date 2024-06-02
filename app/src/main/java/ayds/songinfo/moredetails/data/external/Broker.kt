@@ -1,9 +1,5 @@
 package ayds.songinfo.moredetails.data.external
 
-import ayds.artist.external.ProxyInterface
-import ayds.artist.external.lastfm.data.ProxyLastFMImpl
-import ayds.artist.external.newyorktimes.data.ProxyNYTImpl
-import ayds.artist.external.wikipedia.data.ProxyWikipedia
 import ayds.songinfo.moredetails.domain.Card
 
 interface Broker {
@@ -28,10 +24,5 @@ internal class BrokerImpl() : Broker {
         proxyList.add(ProxyNYTImpl())
         return proxyList
     }
-
-
-
-
-
 }
 
