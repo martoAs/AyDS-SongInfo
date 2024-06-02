@@ -10,6 +10,7 @@ internal class MoreDetailsRepositoryImp(private val moreDetailsLocalStorage: Mor
     override fun getListOfCards(artistName: String): List<Card> {
 
         var cards = moreDetailsLocalStorage.getCards(artistName)
+
         if(cards.isEmpty()){
             cards = broker.getListOfCards(artistName)
             for (c in cards){

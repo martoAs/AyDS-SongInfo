@@ -32,9 +32,6 @@ internal class MoreDetailsLocalStorageImpl(dataBase: CardDatabase) : MoreDetails
         this.url,
         this.source,
         this.sourceLogoUrl
-
-
     )
-
 
 }

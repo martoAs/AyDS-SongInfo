@@ -13,14 +13,15 @@ import ayds.songinfo.moredetails.injector.MoreDetailsInjector
 import com.squareup.picasso.Picasso
 
 class MoreDetailsView():Activity() {
-    private lateinit var cardContentTextView: TextView
-    private lateinit var openUrlButton : Button
-    private lateinit var sourceImage : ImageView
-    private lateinit var presenter: MoreDetailsPresenter
-    private lateinit var sourceLabels: List<TextView>
+    private lateinit var cardContentTextViews: List<TextView>
+    private lateinit var openUrlButtons : List<Button>
+    private lateinit var sourceImages : List<ImageView>
 
     private var uiState: CardUIState = CardUIState("", "","",false,"","")
-    private var locallyStoredLogo = "https://img.icons8.com/ultraviolet/40/database.png"
+    private val locallyStoredLogo = "https://img.icons8.com/ultraviolet/40/database.png"
+    private val NO_RESULTS_MSG = "No results"
+
+    private lateinit var presenter: MoreDetailsPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,77 +37,85 @@ class MoreDetailsView():Activity() {
         presenter = MoreDetailsInjector.getMoreDetailsPresenter()
     }
 
-    private fun makeLabelList() {
-        val firstSource = findViewById<TextView>(R.id.source1)
-        val secondSource = findViewById<TextView>(R.id.source2)
-        val thirdSource = findViewById<TextView>(R.id.source3)
-        sourceLabels = listOf(firstSource, secondSource, thirdSource)
-    }
-
     private fun initializeViewProperties() {
         setContentView(R.layout.activity_other_info)
-        cardContentTextView = findViewById(R.id.cardContent1TextPane)
-        openUrlButton = findViewById(R.id.openUrlButton)
-        sourceImage = findViewById(R.id.lastFMImageView)
-        makeLabelList()
+        cardContentTextViews = listOf(findViewById(R.id.cardContent1TextPane), findViewById(R.id.cardContent2TextPane), findViewById(R.id.cardContent3TextPane))
+        openUrlButtons = listOf(findViewById(R.id.openUrlButton1), findViewById(R.id.openUrlButton2), findViewById(R.id.openUrlButton3))
+        sourceImages = listOf(findViewById(R.id.imageView1), findViewById(R.id.imageView2), findViewById(R.id.imageView3))
     }
 
     private fun initializeObservables(){
         presenter.cardObservable.subscribe{ updateUI(it) }
     }
 
-    private fun updateUI(uiState: CardUIState){
+    private fun updateUI(cards: List<CardUIState>){
+        when(cards.size) {
+            0 -> {
+                updateUINoResults()
+            }
+            1 -> {
+                updateUI(cards[0], 0)
+            }
+            2 -> {
+                updateUI(cards[0], 0)
+                updateUI(cards[1], 1)
+            }
+            3 -> {
+                updateUI(cards[0], 0)
+                updateUI(cards[1], 1)
+                updateUI(cards[2], 2)
+            }
+        }
+    }
+
+    private fun updateUINoResults(){
+        cardContentTextViews.first().text = Html.fromHtml(NO_RESULTS_MSG, Html.FROM_HTML_MODE_LEGACY)
+    }
+    private fun updateUI(uiState: CardUIState, index: Int){
         runOnUiThread {
-            updateUrl(uiState.url)
-            updateServiceLogo(uiState.imageUrl)
+            updateUrl(uiState.url, index)
+            updateServiceLogo(uiState.imageUrl, index)
             updateBiography(uiState.contentHtml)
-            updateArticleText()
-            updateEnable(uiState.actionsEnabled)
-            updateSourceLabel(uiState.source)
+            updateArticleText(index)
+            updateEnable(uiState.actionsEnabled, index)
         }
     }
 
-    private fun updateSourceLabel(source: String) {
-        sourceLabels.first().text = source
-        sourceLabels.first().visibility = TextView.VISIBLE
-
-    }
-
-    private fun updateUrl(urlString: String){
+    private fun updateUrl(urlString: String, index: Int){
         uiState = uiState.copy(url = urlString)
-        updateOpenUrlButton()
+        updateOpenUrlButton(index, urlString)
     }
 
-    private fun updateOpenUrlButton() {
-        openUrlButton.setOnClickListener {
-            triggerWebBrowsingActivity()
+    private fun updateOpenUrlButton(index: Int, url:String) {
+        openUrlButtons[index].setOnClickListener {
+            triggerWebBrowsingActivity(url)
         }
     }
 
-    private fun triggerWebBrowsingActivity() {
+    private fun triggerWebBrowsingActivity(url:String) {
         val intent = Intent(Intent.ACTION_VIEW)
         if(uiState.url!=""){
-            intent.setData(Uri.parse(uiState.url))
+            intent.setData(Uri.parse(url))
             startActivity(intent)
         }
     }
 
-    private fun updateServiceLogo(url:String) {
-        Picasso.get().load(url).into(sourceImage)
+    private fun updateServiceLogo(url:String, index: Int) {
+        Picasso.get().load(url).into(sourceImages[index])
     }
 
     private fun updateBiography(biography: String){
         uiState = uiState.copy(contentHtml = biography)
     }
 
-    private fun updateArticleText() {
-        cardContentTextView.text = Html.fromHtml(uiState.contentHtml, Html.FROM_HTML_MODE_LEGACY)
+    private fun updateArticleText(index: Int) {
+        cardContentTextViews[index].text = Html.fromHtml(uiState.contentHtml, Html.FROM_HTML_MODE_LEGACY)
     }
 
-    private fun updateEnable(isEnabled: Boolean){
+    private fun updateEnable(isEnabled: Boolean, index: Int){
         uiState = uiState.copy(actionsEnabled = isEnabled)
         runOnUiThread {
-            openUrlButton.isEnabled = uiState.actionsEnabled
+            openUrlButtons[index].isEnabled = uiState.actionsEnabled
         }
     }
 
