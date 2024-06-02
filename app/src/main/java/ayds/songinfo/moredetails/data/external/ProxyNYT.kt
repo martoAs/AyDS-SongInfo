@@ -18,7 +18,7 @@ class ProxyNYTImpl: ProxyInterface {
             is NYTimesArticle.NYTimesArticleWithData -> {
                 Card(articleNYT.name, articleNYT.info, articleNYT.url, CardSource.NYTIMES, articleNYT.logourl)
             }
-            is NYTimesArticle.EmptyArtistDataExternal -> Card("", "","", CardSource.NYTIMES, "")
+            is NYTimesArticle.EmptyNYTimesArticle -> Card("", "","", CardSource.NYTIMES, "")
         }
         return cardToReturn
     }

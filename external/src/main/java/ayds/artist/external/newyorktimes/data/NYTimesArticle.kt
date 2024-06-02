@@ -10,5 +10,5 @@ sealed class NYTimesArticle {
 
     ): NYTimesArticle()
 
-    data object EmptyArtistDataExternal : NYTimesArticle()
+    data object EmptyNYTimesArticle : NYTimesArticle()
 }

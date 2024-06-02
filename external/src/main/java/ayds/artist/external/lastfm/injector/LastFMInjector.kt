@@ -1,11 +1,12 @@
 package ayds.artist.external.lastfm.injector
 
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import ayds.artist.external.lastfm.data.LastFMAPI
 import ayds.artist.external.lastfm.data.LastFMService
 import ayds.artist.external.lastfm.data.LastFMServiceImpl
-import ayds.artist.external.lastfm.data.LastFMAPI
 import ayds.artist.external.lastfm.data.LastfmToArticleResolver
+import ayds.artist.external.lastfm.data.LastfmToArticleResolverImpl
+import retrofit2.Retrofit
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 object LastFMInjector {
     private const val AUDIOSCROBBLER_PATH = "https://ws.audioscrobbler.com/2.0/"
@@ -20,7 +21,7 @@ object LastFMInjector {
             .build()
 
         lastFMAPI = retrofit.create(LastFMAPI::class.java)
-        lastfmToArticleResolver = ayds.artist.external.lastfm.data.LastfmToArticleResolverImpl()
+        lastfmToArticleResolver = LastfmToArticleResolverImpl()
 
         lastFMService = LastFMServiceImpl(
             lastFMAPI,

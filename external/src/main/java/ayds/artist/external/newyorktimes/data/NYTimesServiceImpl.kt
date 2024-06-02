@@ -1,6 +1,6 @@
 package ayds.artist.external.newyorktimes.data
 
-import ayds.artist.external.newyorktimes.data.NYTimesArticle.EmptyArtistDataExternal
+import ayds.artist.external.newyorktimes.data.NYTimesArticle.EmptyNYTimesArticle
 import ayds.artist.external.newyorktimes.data.NYTimesArticle.NYTimesArticleWithData
 import java.io.IOException
 
@@ -18,7 +18,7 @@ internal class NYTimesServiceImpl(
         }
 
         return if(infoArtist == null){
-            EmptyArtistDataExternal
+            EmptyNYTimesArticle
         }
         else{
             val response = getInfoFromAPI(artistName)
